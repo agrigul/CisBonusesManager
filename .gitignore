@@ -1,0 +1,13 @@
+# git ignore file
+_ReSharper.Web/
+Debug/
+Release/
+packages/
+bin/
+*.vsmdi
+*.testsettings
+*.trx
+*.bin
+*.crc
+*.version
+*.dat
