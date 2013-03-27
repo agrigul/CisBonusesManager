@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Microsoft.Web.WebPages.OAuth;
-using WebMatrix.WebData;
 using Web.Filters;
 using Web.Models;
+using WebMatrix.WebData;
 
 namespace Web.Controllers
 {
+    /// <summary>
+    /// Class AccountController
+    /// </summary>
     [Authorize]
     [InitializeSimpleMembership]
     public class AccountController : Controller
     {
-        //
         // GET: /Account/Login
 
+        /// <summary>
+        /// Logins the specified return URL.
+        /// </summary>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>ActionResult.</returns>
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -27,9 +33,14 @@ namespace Web.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Login
 
+        /// <summary>
+        /// Logins the specified model.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -41,13 +52,16 @@ namespace Web.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            ModelState.AddModelError("", "The user name or password provided is incorrect.");
+            ModelState.AddModelError(string.Empty, "The user name or password provided is incorrect.");
             return View(model);
         }
-
-        //
+        
         // POST: /Account/LogOff
 
+        /// <summary>
+        /// Logs the off.
+        /// </summary>
+        /// <returns>ActionResult.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
@@ -56,19 +70,26 @@ namespace Web.Controllers
 
             return RedirectToAction("Index", "Home");
         }
-
-        //
+        
         // GET: /Account/Register
 
+        /// <summary>
+        /// Registers this instance.
+        /// </summary>
+        /// <returns>ActionResult.</returns>
         [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
-
-        //
+        
         // POST: /Account/Register
 
+        /// <summary>
+        /// Registers the specified model.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -85,17 +106,22 @@ namespace Web.Controllers
                 }
                 catch (MembershipCreateUserException e)
                 {
-                    ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
+                    ModelState.AddModelError(string.Empty, ErrorCodeToString(e.StatusCode));
                 }
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-
-        //
+        
         // POST: /Account/Disassociate
 
+        /// <summary>
+        /// Disassociates the specified provider.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="providerUserId">The provider user id.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Disassociate(string provider, string providerUserId)
@@ -121,25 +147,33 @@ namespace Web.Controllers
 
             return RedirectToAction("Manage", new { Message = message });
         }
-
-        //
+        
         // GET: /Account/Manage
 
+        /// <summary>
+        /// Manages the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <returns>ActionResult.</returns>
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
                 : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-                : "";
+                : string.Empty;
             ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
             ViewBag.ReturnUrl = Url.Action("Manage");
             return View();
         }
 
-        //
         // POST: /Account/Manage
 
+        /// <summary>
+        /// Manages the specified model.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Manage(LocalPasswordModel model)
@@ -168,7 +202,7 @@ namespace Web.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
+                        ModelState.AddModelError(string.Empty, "The current password is incorrect or the new password is invalid.");
                     }
                 }
             }
@@ -191,7 +225,7 @@ namespace Web.Controllers
                     }
                     catch (Exception e)
                     {
-                        ModelState.AddModelError("", e);
+                        ModelState.AddModelError(string.Empty, e);
                     }
                 }
             }
@@ -199,10 +233,15 @@ namespace Web.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-
-        //
+        
         // POST: /Account/ExternalLogin
 
+        /// <summary>
+        /// Externals the login.
+        /// </summary>
+        /// <param name="provider">The provider.</param>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -210,10 +249,14 @@ namespace Web.Controllers
         {
             return new ExternalLoginResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
         }
-
-        //
+        
         // GET: /Account/ExternalLoginCallback
 
+        /// <summary>
+        /// Externals the login callback.
+        /// </summary>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>ActionResult.</returns>
         [AllowAnonymous]
         public ActionResult ExternalLoginCallback(string returnUrl)
         {
@@ -243,10 +286,15 @@ namespace Web.Controllers
                 return View("ExternalLoginConfirmation", new RegisterExternalLoginModel { UserName = result.UserName, ExternalLoginData = loginData });
             }
         }
-
-        //
+        
         // POST: /Account/ExternalLoginConfirmation
 
+        /// <summary>
+        /// Externals the login confirmation.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>ActionResult.</returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -266,6 +314,7 @@ namespace Web.Controllers
                 using (UsersContext db = new UsersContext())
                 {
                     UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
+                    
                     // Check if user already exists
                     if (user == null)
                     {
@@ -289,16 +338,24 @@ namespace Web.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
-
-        //
+        
         // GET: /Account/ExternalLoginFailure
 
+        /// <summary>
+        /// Externals the login failure.
+        /// </summary>
+        /// <returns>ActionResult.</returns>
         [AllowAnonymous]
         public ActionResult ExternalLoginFailure()
         {
             return View();
         }
 
+        /// <summary>
+        /// Externals the logins list.
+        /// </summary>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>ActionResult.</returns>
         [AllowAnonymous]
         [ChildActionOnly]
         public ActionResult ExternalLoginsList(string returnUrl)
@@ -307,6 +364,10 @@ namespace Web.Controllers
             return PartialView("_ExternalLoginsListPartial", OAuthWebSecurity.RegisteredClientData);
         }
 
+        /// <summary>
+        /// Removes the external logins.
+        /// </summary>
+        /// <returns>ActionResult.</returns>
         [ChildActionOnly]
         public ActionResult RemoveExternalLogins()
         {
@@ -329,6 +390,11 @@ namespace Web.Controllers
         }
 
         #region Helpers
+        /// <summary>
+        /// Redirects to local.
+        /// </summary>
+        /// <param name="returnUrl">The return URL.</param>
+        /// <returns>ActionResult.</returns>
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
@@ -341,6 +407,9 @@ namespace Web.Controllers
             }
         }
 
+        /// <summary>
+        /// Enum ManageMessageId
+        /// </summary>
         public enum ManageMessageId
         {
             ChangePasswordSuccess,
@@ -348,23 +417,49 @@ namespace Web.Controllers
             RemoveLoginSuccess,
         }
 
+        /// <summary>
+        /// Class ExternalLoginResult
+        /// </summary>
         internal class ExternalLoginResult : ActionResult
         {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="ExternalLoginResult"/> class.
+            /// </summary>
+            /// <param name="provider">The provider.</param>
+            /// <param name="returnUrl">The return URL.</param>
             public ExternalLoginResult(string provider, string returnUrl)
             {
                 Provider = provider;
                 ReturnUrl = returnUrl;
             }
 
+            /// <summary>
+            /// Gets the provider.
+            /// </summary>
+            /// <value>The provider.</value>
             public string Provider { get; private set; }
+
+            /// <summary>
+            /// Gets the return URL.
+            /// </summary>
+            /// <value>The return URL.</value>
             public string ReturnUrl { get; private set; }
 
+            /// <summary>
+            /// Enables processing of the result of an action method by a custom type that inherits from the <see cref="T:System.Web.Mvc.ActionResult" /> class.
+            /// </summary>
+            /// <param name="context">The context in which the result is executed. The context information includes the controller, HTTP content, request context, and route data.</param>
             public override void ExecuteResult(ControllerContext context)
             {
                 OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
             }
         }
 
+        /// <summary>
+        /// Errors the code to string.
+        /// </summary>
+        /// <param name="createStatus">The create status.</param>
+        /// <returns>System.String.</returns>
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)
         {
             // See http://go.microsoft.com/fwlink/?LinkID=177550 for
