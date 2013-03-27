@@ -20,6 +20,42 @@ namespace Web.Models
         public virtual Employee Employee { get; set; }
 
         /// <summary>
+        /// Gets the name of the employee user.
+        /// </summary>
+        /// <value>The name of the employee user.</value>
+        public string EmployeeUserName
+        {
+            get
+            {
+                return Employee == null ? "" : Employee.UserName;
+            }
+        }
+
+        /// <summary>
+        /// Gets the last name of the employee.
+        /// </summary>
+        /// <value>The last name of the employee.</value>
+        public string EmployeeLastName
+        {
+            get
+            {
+                return Employee == null ? "" : Employee.LastName;
+            }
+        }
+
+        /// <summary>
+        /// Gets the employee last name (ukr).
+        /// </summary>
+        /// <value>The employee last name (ukr)</value>
+        public string EmployeeLastNameUkr
+        {
+            get
+            {
+                return Employee == null ? "" : Employee.LastNameUkr;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the date.
         /// </summary>
         /// <value>The date.</value>
