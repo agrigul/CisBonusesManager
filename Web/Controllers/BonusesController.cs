@@ -11,7 +11,6 @@ namespace Web.Controllers
     /// </summary>
     public class BonusesController : Controller
     {
-
         /// <summary>
         /// The repository of bonuses
         /// </summary>
