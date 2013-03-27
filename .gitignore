@@ -4,6 +4,8 @@ Debug/
 Release/
 packages/
 bin/
+TestResults/
+StyleCop.Cache
 *.vsmdi
 *.testsettings
 *.trx
