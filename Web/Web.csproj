@@ -164,7 +164,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BonusesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Infrastructure\Repository\BonusesRepository.cs" />
+    <Compile Include="Infrastructure\Repository\EmployeesRepository.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -173,7 +177,7 @@
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\Bonus.cs" />
     <Compile Include="Models\Employee.cs" />
-    <Compile Include="Infrastructure\Repository\BonusesDbContext.cs" />
+    <Compile Include="Infrastructure\Repository\DatabaseContext.cs" />
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -294,6 +298,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Bonuses\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Bonuses\Details.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Bonuses\Create.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Bonuses\Edit.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

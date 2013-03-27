@@ -1,9 +1,9 @@
-﻿using System.Data.Entity;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Infrastructure.Repository;
 using Web.Models;
+using Web.Models.Repositories;
 
 namespace IntegrationTests
 {
@@ -13,19 +13,38 @@ namespace IntegrationTests
     [TestClass]
     public class BonusRepositoryTests
     {
-        public BonusRepositoryTests()
+        /// <summary>
+        /// The repository of bonuses
+        /// </summary>
+        private IRepository<Bonus> repository;
+        
+        /// <summary>
+        /// Tests the initialization.
+        /// </summary>
+        [TestInitialize]
+        public void TestInitilalization()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+            repository = new BonusesRepository();
+        }
+
+        /// <summary>
+        /// Tests the dispose.
+        /// </summary>
+        [TestCleanup]
+        public void TestClean()
+        {
+            if (repository != null)
+                repository.Dispose();
+
+            repository = null;
         }
 
         private TestContext testContextInstance;
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -59,19 +78,20 @@ namespace IntegrationTests
         // public void MyTestCleanup() { }
         //
         #endregion
-
+        
         [TestMethod]
         [Description("Checks that repository can select entities form database")]
-        public void GetFirstBonus_noParams_bonus()
+        public void GetFirstBonus_noParams_bonuses()
         {
-            Bonus bonus;
+            IList<Bonus> bonuses;
 
-            using (var context = new BonusesDbContext())
+            using (repository)
             {
-                bonus = context.Bonuses.FirstOrDefault();
+                bonuses = repository.FindAll();
             }
 
-            Assert.IsNotNull(bonus);
+            Assert.IsNotNull(bonuses);
+            Assert.AreNotEqual(0, bonuses.Count);
         }
 
         [TestMethod]
@@ -79,10 +99,10 @@ namespace IntegrationTests
         public void GetFirstBonus_noParams_employeeExists()
         {
             Bonus bonus;
-            
-            using (var context = new BonusesDbContext())
+
+            using (repository)
             {
-                bonus = context.Bonuses.Include(b => b.Employee).FirstOrDefault();
+                bonus = repository.FindAll().First();
             }
 
             Assert.IsNotNull(bonus.Employee);

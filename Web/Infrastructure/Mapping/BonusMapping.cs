@@ -5,7 +5,7 @@ using Web.Models;
 namespace Web.Infrastructure.Mapping
 {
     /// <summary>
-    /// mapping class fo Bonus entity to database
+    /// mapping class to Bonus entity to database
     /// </summary>
     public class BonusMapping : EntityTypeConfiguration<Bonus>
     {
@@ -18,9 +18,9 @@ namespace Web.Infrastructure.Mapping
             
             HasKey(x => x.Id);
             Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            HasRequired(x => x.Employee).
-                WithOptional().
-                WillCascadeOnDelete(false);
+            HasRequired(x => x.Employee)
+                .WithOptional()
+                .WillCascadeOnDelete(false);
             Property(x => x.Date);
             Property(x => x.Amount);
             Property(x => x.Comment);

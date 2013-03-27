@@ -1,0 +1,78 @@
+﻿@model Web.Models.Bonus
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Bonus</legend>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.EmployeeUserName)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.EmployeeUserName)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.EmployeeLastName)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.EmployeeLastName)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.EmployeeLastNameUkr)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.EmployeeLastNameUkr)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Date)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Date)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Amount)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Amount)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Comment)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Comment)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.IsActive)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.IsActive)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Ulc)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Ulc)
+    </div>
+
+    <div class="display-label">
+         @Html.DisplayNameFor(model => model.Dlc)
+    </div>
+    <div class="display-field">
+        @Html.DisplayFor(model => model.Dlc)
+    </div>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
