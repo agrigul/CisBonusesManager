@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using Web.Models;
 using Web.Infrastructure.Repository;
@@ -20,19 +15,22 @@ namespace Web.Controllers
         /// <summary>
         /// The repository of bonuses
         /// </summary>
-        private IBonusesRepository BonusesRepository { get; set; }
+        private IRepository<Bonus> Repository { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BonusesController"/> class by default.
+        /// </summary>
         public BonusesController()
         {
-            BonusesRepository = new BonusesRepository();
+            Repository = new BonusesRepository();
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesController"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public BonusesController(IBonusesRepository repository)
+        public BonusesController(IRepository<Bonus> repository)
         {
-            BonusesRepository = repository;
+            Repository = repository;
         }
 
         // GET: /Bonuses/
@@ -45,9 +43,9 @@ namespace Web.Controllers
         {
             IList<Bonus> bonuses;
 
-            using (BonusesRepository)
+            using (Repository)
             {
-                bonuses = BonusesRepository.FindAll();
+                bonuses = Repository.FindAll();
             }
 
             return View(bonuses);
@@ -63,9 +61,9 @@ namespace Web.Controllers
         {
             //Bonus bonus = db.Bonuses.Find(id);
             Bonus bonus;
-            using (BonusesRepository)
+            using (Repository)
             {
-                bonus = BonusesRepository.GetById(id);
+                bonus = Repository.GetById(id);
             }
 
             if (bonus == null)
@@ -117,9 +115,9 @@ namespace Web.Controllers
         {
             //Bonus bonus = db.Bonuses.Find(id);
             Bonus bonus;
-            using(BonusesRepository)
+            using(Repository)
             {
-                bonus = BonusesRepository.GetById(id);
+                bonus = Repository.GetById(id);
             }
 
             if (bonus == null)
@@ -157,7 +155,7 @@ namespace Web.Controllers
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            BonusesRepository.Dispose();
+            Repository.Dispose();
             base.Dispose(disposing);
         }
     }

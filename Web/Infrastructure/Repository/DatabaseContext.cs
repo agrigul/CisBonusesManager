@@ -7,7 +7,7 @@ namespace Web.Infrastructure.Repository
     /// <summary>
     /// Database context class
     /// </summary>
-    public class BonusesDbContext : DbContext
+    public class DatabaseContext : DbContext
     {
         /// <summary>
         /// The name connection to database
@@ -29,10 +29,10 @@ namespace Web.Infrastructure.Repository
         /// <summary>
         /// Sets database initialization strategy
         /// </summary>
-        public BonusesDbContext()
+        public DatabaseContext()
             : base(ConnectionStringName)
         {
-            Database.SetInitializer<BonusesDbContext>(null); // without creating new database
+            Database.SetInitializer<DatabaseContext>(null); // without creating new database
         }
 
         /// <summary>
@@ -42,11 +42,8 @@ namespace Web.Infrastructure.Repository
         {
             modelBuilder.Configurations.Add(new BonusMapping());
             modelBuilder.Configurations.Add(new EmployeeMapping());
-            this.Configuration.LazyLoadingEnabled = false;
+            Configuration.LazyLoadingEnabled = false;
             base.OnModelCreating(modelBuilder);
-
-
-
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Infrastructure.Repository;
@@ -18,7 +16,7 @@ namespace IntegrationTests
         /// <summary>
         /// The repository of bonuses
         /// </summary>
-        private IBonusesRepository bonusesRepository;
+        private IRepository<Bonus> repository;
         
         /// <summary>
         /// Tests the initialization.
@@ -26,7 +24,7 @@ namespace IntegrationTests
         [TestInitialize]
         public void TestInitilalization()
         {
-            bonusesRepository = new BonusesRepository();
+            repository = new BonusesRepository();
         }
 
         /// <summary>
@@ -35,10 +33,10 @@ namespace IntegrationTests
         [TestCleanup]
         public void TestClean()
         {
-            if (bonusesRepository != null)
-                bonusesRepository.Dispose();
+            if (repository != null)
+                repository.Dispose();
 
-            bonusesRepository = null;
+            repository = null;
         }
 
         private TestContext testContextInstance;
@@ -87,9 +85,9 @@ namespace IntegrationTests
         {
             IList<Bonus> bonuses;
 
-            using (bonusesRepository)
+            using (repository)
             {
-                bonuses = bonusesRepository.FindAll();
+                bonuses = repository.FindAll();
             }
 
             Assert.IsNotNull(bonuses);
@@ -102,9 +100,9 @@ namespace IntegrationTests
         {
             Bonus bonus;
 
-            using (bonusesRepository)
+            using (repository)
             {
-                bonus = bonusesRepository.FindAll().First();
+                bonus = repository.FindAll().First();
             }
 
             Assert.IsNotNull(bonus.Employee);

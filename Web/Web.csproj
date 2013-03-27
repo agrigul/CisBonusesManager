@@ -167,7 +167,8 @@
     <Compile Include="Controllers\BonusesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Infrastructure\Repository\BonusesRepository.cs" />
-    <Compile Include="Models\Repositories\IBonusesRepository.cs" />
+    <Compile Include="Infrastructure\Repository\EmployeesRepository.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -176,7 +177,7 @@
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\Bonus.cs" />
     <Compile Include="Models\Employee.cs" />
-    <Compile Include="Infrastructure\Repository\BonusesDbContext.cs" />
+    <Compile Include="Infrastructure\Repository\DatabaseContext.cs" />
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

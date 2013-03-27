@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Infrastructure.Repository;
 using Web.Models;
+using Web.Models.Repositories;
 
 namespace IntegrationTests
 {
@@ -14,13 +15,35 @@ namespace IntegrationTests
     [TestClass]
     public class EmployeeRepositoryTests
     {
-        public EmployeeRepositoryTests()
+        /// <summary>
+        /// The repository of Employees
+        /// </summary>
+        private IRepository<Employee> repository;
+
+        /// <summary>
+        /// Tests the initialization.
+        /// </summary>
+        [TestInitialize]
+        public void TestInitilalization()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+            repository = new EmployeesRepository();
         }
 
+        /// <summary>
+        /// Tests the dispose.
+        /// </summary>
+        [TestCleanup]
+        public void TestClean()
+        {
+            if (repository != null)
+                repository.Dispose();
+
+            repository = null;
+        }
+
+        /// <summary>
+        /// The test context instance
+        /// </summary>
         private TestContext testContextInstance;
 
         /// <summary>
@@ -67,9 +90,9 @@ namespace IntegrationTests
         {
             Employee employee;
 
-            using (var context = new BonusesDbContext())
+            using (repository)
             {
-                employee = context.Employees.FirstOrDefault();
+                employee = repository.FindAll().FirstOrDefault();
             }
 
             Assert.IsNotNull(employee);

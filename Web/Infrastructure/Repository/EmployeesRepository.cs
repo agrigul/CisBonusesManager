@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using Web.Models;
 using Web.Models.Repositories;
@@ -10,7 +9,7 @@ namespace Web.Infrastructure.Repository
     /// <summary>
     /// BonusesRepository of bonuses
     /// </summary>
-    public class BonusesRepository : IRepository<Bonus>
+    public class EmployeesRepository : IRepository<Employee>
     {
         /// <summary>
         /// The context of database
@@ -20,7 +19,7 @@ namespace Web.Infrastructure.Repository
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class by default.
         /// </summary>
-        public BonusesRepository()
+        public EmployeesRepository()
         {
             dbContext = new DatabaseContext();
         }
@@ -41,38 +40,38 @@ namespace Web.Infrastructure.Repository
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class.
         /// </summary>
         /// <param name="dbContext">The db context.</param>
-        public BonusesRepository(DatabaseContext dbContext)
+        public EmployeesRepository(DatabaseContext dbContext)
         {
             if (dbContext == null)
-                throw new ArgumentNullException("BonusesRepository",
+                throw new ArgumentNullException("EmployeesRepository",
                                                 "DatabaseContext should be initialized first");
 
             this.dbContext = dbContext;
         }
 
         /// <summary>
-        /// Finds all bonuses.
+        /// Finds all Employees.
         /// </summary>
-        /// <returns>IEnumerable{Bonus}.</returns>
+        /// <returns>IEnumerable{Employee}.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public IList<Bonus> FindAll()
+        public IList<Employee> FindAll()
         {
-            return dbContext.Bonuses
-                    .Include(b => b.Employee)
-                    .ToList();
+            return dbContext.Employees.ToList();
         }
 
         /// <summary>
-        /// Gets bonus by id.
+        /// Gets Employee by id.
         /// </summary>
         /// <param name="id">The id.</param>
-        /// <returns>Bonus.</returns>
+        /// <returns>Employee.</returns>
         /// <exception cref="System.NotImplementedException"></exception>
-        public Bonus GetById(int id)
+        public Employee GetById(int id)
         {
-            return dbContext.Bonuses
-                    .Include(b => b.Employee)
-                    .Where(x => x.Id == id).FirstOrDefault();
+            return dbContext.Employees
+                    .Where(x => x.Id == id)
+                    .FirstOrDefault();
         }
+
+
     }
 }

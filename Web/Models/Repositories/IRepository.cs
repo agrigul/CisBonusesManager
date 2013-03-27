@@ -4,21 +4,21 @@ using System.Collections.Generic;
 namespace Web.Models.Repositories
 {
     /// <summary>
-    /// Interface for repository of bonuses
+    /// Interface for repository
     /// </summary>
-    public interface IBonusesRepository : IDisposable
+    public interface IRepository<T> : IDisposable where T : class
     {
         /// <summary>
         /// Finds all bonuses.
         /// </summary>
         /// <returns>IEnumerable{Bonus}.</returns>
-        IList<Bonus> FindAll();
+        IList<T> FindAll();
 
         /// <summary>
         /// Gets bonus by id.
         /// </summary>
         /// <param name="id">The id.</param>
         /// <returns>Bonus.</returns>
-        Bonus GetById(int id);
+        T GetById(int id);
     }
 }
