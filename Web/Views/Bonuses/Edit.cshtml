@@ -1,4 +1,4 @@
-﻿@model Web.Models.Bonus
+﻿@model Web.Models.Bonuses.BonusAggregate
 
 @{
     ViewBag.Title = "Edit";
@@ -12,7 +12,7 @@
     <fieldset>
         <legend>Bonus</legend>
 
-        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.BonusId)
 
         <div class="editor-label">
             @Html.LabelFor(model => model.Date)

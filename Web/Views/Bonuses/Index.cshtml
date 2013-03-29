@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Web.Models.Bonus>
+﻿@model IEnumerable<Web.Models.Bonuses.BonusAggregate>
 
 @{
     ViewBag.Title = "Index";
@@ -71,8 +71,8 @@
             @Html.DisplayFor(modelItem => item.Dlc)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+            @Html.ActionLink("Edit", "Edit", new { id=item.BonusId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.BonusId }) |
         </td>
     </tr>
 }

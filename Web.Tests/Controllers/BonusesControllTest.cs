@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Controllers;
+using Web.Infrastructure.Repository;
 using Web.Models;
-using Web.Models.Repositories;
 using Moq;
+using Web.Models.Bonuses;
 
 namespace Web.Tests.Controllers
 {
@@ -18,12 +20,12 @@ namespace Web.Tests.Controllers
         /// <summary>
         /// The mocked repository of bonuses
         /// </summary>
-        private Mock<IRepository<Bonus>> repositoryMock;
+        private Mock<IRepository<BonusAggregate>> repositoryMock;
 
         /// <summary>
         /// The prepared bonuses for test
         /// </summary>
-        private static readonly IList<Bonus> PreparedBonusesForTest = CreateMockBonuses();
+        private static readonly IList<BonusAggregate> PreparedBonusesForTest = CreateMockBonuses();
 
         /// <summary>
         /// The controller
@@ -36,7 +38,7 @@ namespace Web.Tests.Controllers
         [TestInitialize]
         public void TestInitilalization()
         {
-            repositoryMock = new Mock<IRepository<Bonus>>();
+            repositoryMock = new Mock<IRepository<BonusAggregate>>();
             repositoryMock.Setup(x => x.FindAll()).Returns(PreparedBonusesForTest);
             controller = new BonusesController(repositoryMock.Object);
         }
@@ -55,7 +57,7 @@ namespace Web.Tests.Controllers
         public void Index_NoParams_MoreThanOneItem()
         {
             var result = controller.Index() as ViewResult;
-            var bonuses = result.Model as IList<Bonus>;
+            var bonuses = result.Model as IList<BonusAggregate>;
 
             Assert.AreEqual(2, bonuses.Count);
         }
@@ -65,7 +67,7 @@ namespace Web.Tests.Controllers
         public void Index_NoParams_EmployeeUserName()
         {
             var result = controller.Index() as ViewResult;
-            var bonuses = result.Model as IList<Bonus>;
+            var bonuses = result.Model as IList<BonusAggregate>;
             Assert.IsTrue(bonuses.Any(x => x.EmployeeUserName == "name1"));
         }
 
@@ -75,31 +77,21 @@ namespace Web.Tests.Controllers
         public void Index_NoParams_EmployeeLastName()
         {
             var result = controller.Index() as ViewResult;
-            var bonuses = result.Model as IList<Bonus>;
+            var bonuses = result.Model as IList<BonusAggregate>;
             Assert.IsTrue(bonuses.Any(x => x.EmployeeLastName == "lastname1"));
         }
 
         /// <summary>
         /// Creates the mock bonuses.
         /// </summary>
-        private static IList<Bonus> CreateMockBonuses()
+        private static IList<BonusAggregate> CreateMockBonuses()
         {
-            return new List<Bonus>
+            BonusFactory factory = new BonusFactory();
+            factory.Create(new Employee("name1", "lastname1", "ukr1"), DateTime.Now, 100);
+            return new List<BonusAggregate>
                                     {
-                                        new Bonus
-                                            {
-                                                Id = 1,
-                                                Amount = 100,
-                                                Employee =
-                                                    new Employee {Id = 11, UserName = "name1", LastName = "lastname1"}
-                                            },
-                                        new Bonus
-                                            {
-                                                Id = 2,
-                                                Amount = 200,
-                                                Employee =
-                                                    new Employee {Id = 22, UserName = "name2", LastName = "lastname1"}
-                                            }
+                                        factory.Create(new Employee("name1", "lastname1", "ukr1"), DateTime.Now, 100),
+                                        factory.Create(new Employee("name1", "lastname1", "ukr1"), DateTime.Now, 200)
                                     };
         }
     }

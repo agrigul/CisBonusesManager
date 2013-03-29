@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Web.Models;
-using Web.Models.Repositories;
+using Web.Models.Bonuses;
 
 namespace Web.Infrastructure.Repository
 {
@@ -15,6 +16,12 @@ namespace Web.Infrastructure.Repository
         /// The context of database
         /// </summary>
         private DatabaseContext dbContext;
+
+        /// <summary>
+        /// Gets the db set.
+        /// </summary>
+        /// <value>The db set.</value>
+        private DbSet<Employee> DbSet { get { return dbContext.Employees; } }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class by default.
@@ -56,8 +63,9 @@ namespace Web.Infrastructure.Repository
         /// <exception cref="System.NotImplementedException"></exception>
         public IList<Employee> FindAll()
         {
-            return dbContext.Employees.ToList();
+            return DbSet.ToList();
         }
+
 
         /// <summary>
         /// Gets Employee by id.
@@ -67,11 +75,52 @@ namespace Web.Infrastructure.Repository
         /// <exception cref="System.NotImplementedException"></exception>
         public Employee GetById(int id)
         {
-            return dbContext.Employees
-                    .Where(x => x.Id == id)
-                    .FirstOrDefault();
+            return DbSet.Where(x => x.EmployeeId == id)
+                        .FirstOrDefault();
         }
 
+        /// <summary>
+        /// Gets the list of employees by list of employeeId.
+        /// </summary>
+        /// <param name="ids">The employees' ids.</param>
+        /// <returns>IList{Employee}.</returns>
+        public IList<Employee> GetByIdList(IEnumerable<int> ids)
+        {
+           return (from e in DbSet
+                    where ids.Contains(e.EmployeeId)
+                    select e).ToList();
+        }
 
+        /// <summary>
+        /// Saves the specified items.
+        /// </summary>
+        /// <param name="items">The items.</param>
+        /// <exception cref="System.ArgumentNullException">Save;List of Employee shouldn't be null</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Save;List of Employee can't be empty</exception>
+        public void Save(IEnumerable<Employee> items)
+        {
+            if (items == null)
+                throw new ArgumentNullException("Save", "List of Employee shouldn't be null");
+
+            if (!items.Any())
+                throw new ArgumentOutOfRangeException("Save", "List of Employee can't be empty");
+
+            foreach (Employee employee in items)
+            {
+                DbSet.Add(employee);
+            }
+
+            dbContext.SaveChanges();
+        }
+
+        /// <summary>
+        /// Saves the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <exception cref="System.ArgumentNullException">Save;Employee item shouldn't be null</exception>
+        public void Save(Employee item)
+        {
+            throw new NotSupportedException("Employee entities can't be saved");
+        }
     }
 }

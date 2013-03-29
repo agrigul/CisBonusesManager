@@ -1,5 +1,6 @@
 # git ignore file
 _ReSharper.Web/
+_ReSharper.CisBonusManager/
 Debug/
 Release/
 packages/

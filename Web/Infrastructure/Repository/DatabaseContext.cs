@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using Web.Infrastructure.Mapping;
 using Web.Models;
+using Web.Models.Bonuses;
 
 namespace Web.Infrastructure.Repository
 {
@@ -24,7 +25,7 @@ namespace Web.Infrastructure.Repository
         /// Gets or sets the bonuses table context
         /// </summary>
         /// <value>The bonuses.</value>
-        public DbSet<Bonus> Bonuses { get; set; }
+        public DbSet<BonusAggregate> Bonuses { get; set; }
 
         /// <summary>
         /// Sets database initialization strategy

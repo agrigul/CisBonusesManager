@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using Web.Models;
 using Web.Infrastructure.Repository;
-using Web.Models.Repositories;
+using Web.Models.Bonuses;
 
 namespace Web.Controllers
 {
@@ -14,7 +14,7 @@ namespace Web.Controllers
         /// <summary>
         /// The repository of bonuses
         /// </summary>
-        private IRepository<Bonus> Repository { get; set; }
+        private IRepository<BonusAggregate> Repository { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesController"/> class by default.
@@ -27,7 +27,7 @@ namespace Web.Controllers
         /// Initializes a new instance of the <see cref="BonusesController"/> class.
         /// </summary>
         /// <param name="repository">The repository.</param>
-        public BonusesController(IRepository<Bonus> repository)
+        public BonusesController(IRepository<BonusAggregate> repository)
         {
             Repository = repository;
         }
@@ -40,7 +40,7 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
         {
-            IList<Bonus> bonuses;
+            IList<BonusAggregate> bonuses;
 
             using (Repository)
             {
@@ -58,18 +58,18 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         public ActionResult Details(int id = 0)
         {
-            //Bonus bonus = db.Bonuses.Find(id);
-            Bonus bonus;
+            //BonusAggregate bonus = db.Bonuses.Find(id);
+            BonusAggregate bonusAggregate;
             using (Repository)
             {
-                bonus = Repository.GetById(id);
+                bonusAggregate = Repository.GetById(id);
             }
 
-            if (bonus == null)
+            if (bonusAggregate == null)
             {
                 return HttpNotFound();
             }
-            return View(bonus);
+            return View(bonusAggregate);
         }
 
         //
@@ -91,20 +91,24 @@ namespace Web.Controllers
         /// <summary>
         /// Creates the specified bonus.
         /// </summary>
-        /// <param name="bonus">The bonus.</param>
+        /// <param name="bonusAggregate">The bonus.</param>
         /// <returns>ActionResult.</returns>
         [HttpPost]
-        public ActionResult Create(Bonus bonus)
+        public ActionResult Create(BonusAggregate bonusAggregate)
         {
-//            if (ModelState.IsValid)
-//            {
+            if (ModelState.IsValid)
+            {
+                using(Repository = new BonusesRepository())
+                {
+                 //   Repository.Save(bonus);
+                }
 //                db.Bonuses.Add(bonus);
 //                db.SaveChanges();
-//                return RedirectToAction("Index");
-//            }
-//
-//            ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
-            return View(bonus);
+                return RedirectToAction("Index");
+            }
+
+            //ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
+            return View(bonusAggregate);
         }
 
         //
@@ -112,31 +116,31 @@ namespace Web.Controllers
 
         public ActionResult Edit(int id = 0)
         {
-            //Bonus bonus = db.Bonuses.Find(id);
-            Bonus bonus;
-            using(Repository)
+            //BonusAggregate bonus = db.Bonuses.Find(id);
+            BonusAggregate bonusAggregate;
+            using(Repository = new BonusesRepository())
             {
-                bonus = Repository.GetById(id);
+                bonusAggregate = Repository.GetById(id);
             }
 
-            if (bonus == null)
+            if (bonusAggregate == null)
             {
                 return HttpNotFound();
             }
             //ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
-            return View(bonus);
+            return View(bonusAggregate);
         }
 
         //
         // POST: /Bonuses/Edit/5
 
         /// <summary>
-        /// Edits the specified bonus.
+        /// Edits the specified BonusAggregate.
         /// </summary>
-        /// <param name="bonus">The bonus.</param>
+        /// <param name="bonusAggregate">The bonus.</param>
         /// <returns>ActionResult.</returns>
         [HttpPost]
-        public ActionResult Edit(Bonus bonus)
+        public ActionResult Edit(BonusAggregate bonusAggregate)
         {
 //            if (ModelState.IsValid)
 //            {
@@ -145,7 +149,7 @@ namespace Web.Controllers
 //                return RedirectToAction("Index");
 //            }
 //            ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
-            return View(bonus);
+            return View(bonusAggregate);
         }
 
         /// <summary>

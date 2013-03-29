@@ -168,15 +168,16 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Infrastructure\Repository\BonusesRepository.cs" />
     <Compile Include="Infrastructure\Repository\EmployeesRepository.cs" />
-    <Compile Include="Models\Repositories\IRepository.cs" />
+    <Compile Include="Models\Bonuses\BonusFactory.cs" />
+    <Compile Include="Infrastructure\Repository\IRepository.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\Mapping\EmployeeMapping.cs" />
     <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\Bonus.cs" />
-    <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\Bonuses\BonusAggregate.cs" />
+    <Compile Include="Models\Bonuses\Employee.cs" />
     <Compile Include="Infrastructure\Repository\DatabaseContext.cs" />
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
