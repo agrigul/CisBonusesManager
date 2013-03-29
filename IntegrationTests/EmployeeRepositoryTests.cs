@@ -83,7 +83,7 @@ namespace IntegrationTests
         #endregion
 
         [TestMethod]
-        [Description("Checks that repository can select entities form database")]
+        [Description("Repository can select entities form database")]
         public void GetFirstEmployee_noParams_employee()
         {
             Employee employee;
@@ -98,7 +98,7 @@ namespace IntegrationTests
 
 
         [TestMethod]
-        [Description("Checks that repository can select entities form database by list of ids")]
+        [Description("Repository can select entities form database by list of ids")]
         public void GetEmployees_ListOfIds_ListOfEmployees()
         {
             IList<Employee> employee;
@@ -114,7 +114,7 @@ namespace IntegrationTests
 
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
-        [Description("Checks that repository don't save employees in database")]
+        [Description("Repository don't save employees in database")]
         public void Save_noParams_exception()
         {
             using (repository = new EmployeesRepository())

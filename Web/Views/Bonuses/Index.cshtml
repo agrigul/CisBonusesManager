@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Web.Models.Bonuses.BonusAggregate>
+﻿@using Web.Models.Bonuses
+@model IEnumerable<BonusAggregate>
 
 @{
     ViewBag.Title = "Index";
@@ -12,13 +13,7 @@
 <table>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.EmployeeUserName)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.EmployeeLastName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.EmployeeLastNameUkr)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Date)
@@ -43,14 +38,10 @@
 
 @foreach (var item in Model) {
     <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.EmployeeUserName)
-        </td>
+        @Html.HiddenFor(modelItem => item.BonusId)
+        @Html.HiddenFor(modelItem => item.EmployeeId)
         <td>
             @Html.DisplayFor(modelItem => item.EmployeeLastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.EmployeeLastNameUkr)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Date)
@@ -72,7 +63,6 @@
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.BonusId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.BonusId }) |
         </td>
     </tr>
 }

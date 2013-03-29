@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using Web.Models;
 using Web.Infrastructure.Repository;
@@ -14,14 +15,14 @@ namespace Web.Controllers
         /// <summary>
         /// The repository of bonuses
         /// </summary>
-        private IRepository<BonusAggregate> Repository { get; set; }
+        private IRepository<BonusAggregate> BonusesRepository { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesController"/> class by default.
         /// </summary>
         public BonusesController()
         {
-            Repository = new BonusesRepository();
+            BonusesRepository = new BonusesRepository(); // dbContext from config
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesController"/> class.
@@ -29,7 +30,7 @@ namespace Web.Controllers
         /// <param name="repository">The repository.</param>
         public BonusesController(IRepository<BonusAggregate> repository)
         {
-            Repository = repository;
+            BonusesRepository = repository;
         }
 
         // GET: /Bonuses/
@@ -40,12 +41,7 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
         {
-            IList<BonusAggregate> bonuses;
-
-            using (Repository)
-            {
-                bonuses = Repository.FindAll();
-            }
+            IList<BonusAggregate> bonuses = BonusesRepository.FindAll();
 
             return View(bonuses);
         }
@@ -59,11 +55,8 @@ namespace Web.Controllers
         public ActionResult Details(int id = 0)
         {
             //BonusAggregate bonus = db.Bonuses.Find(id);
-            BonusAggregate bonusAggregate;
-            using (Repository)
-            {
-                bonusAggregate = Repository.GetById(id);
-            }
+
+            BonusAggregate bonusAggregate = BonusesRepository.GetById(id);
 
             if (bonusAggregate == null)
             {
@@ -81,7 +74,7 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         public ActionResult Create()
         {
-         //   ViewBag.Id = new SelectList(db.Employees, "Id", "UserName");
+            //   ViewBag.Id = new SelectList(db.Employees, "Id", "UserName");
             return View();
         }
 
@@ -98,12 +91,10 @@ namespace Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                using(Repository = new BonusesRepository())
-                {
-                 //   Repository.Save(bonus);
-                }
-//                db.Bonuses.Add(bonus);
-//                db.SaveChanges();
+                BonusesRepository.Save(bonusAggregate);
+            
+                //                db.Bonuses.Add(bonus);
+                //                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -118,9 +109,9 @@ namespace Web.Controllers
         {
             //BonusAggregate bonus = db.Bonuses.Find(id);
             BonusAggregate bonusAggregate;
-            using(Repository = new BonusesRepository())
+            using (BonusesRepository = new BonusesRepository())
             {
-                bonusAggregate = Repository.GetById(id);
+                bonusAggregate = BonusesRepository.GetById(id);
             }
 
             if (bonusAggregate == null)
@@ -142,13 +133,13 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult Edit(BonusAggregate bonusAggregate)
         {
-//            if (ModelState.IsValid)
-//            {
-//                db.Entry(bonus).State = EntityState.Modified;
-//                db.SaveChanges();
-//                return RedirectToAction("Index");
-//            }
-//            ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
+            //            if (ModelState.IsValid)
+            //            {
+            //                db.Entry(bonus).State = EntityState.Modified;
+            //                db.SaveChanges();
+            //                return RedirectToAction("Index");
+            //            }
+            //            ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
             return View(bonusAggregate);
         }
 
@@ -158,7 +149,10 @@ namespace Web.Controllers
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            Repository.Dispose();
+            if(BonusesRepository != null)
+                BonusesRepository.Dispose();
+            BonusesRepository = null;
+
             base.Dispose(disposing);
         }
     }

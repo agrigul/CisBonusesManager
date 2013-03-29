@@ -93,7 +93,7 @@ namespace IntegrationTests
         #endregion
 
         [TestMethod]
-        [Description("Checks that bonusRepository can select entities form database")]
+        [Description("BonusRepository can select entities form database")]
         public void FindAll_noParams_SomeBonuses()
         {
             IList<BonusAggregate> bonuses;
@@ -108,7 +108,7 @@ namespace IntegrationTests
         }
 
         [TestMethod]
-        [Description("Checks that employees correctly mapped to bonuses")]
+        [Description("Employees correctly mapped to bonuses")]
         public void FindAll_NoParams_EmployeeExists()
         {
             BonusAggregate bonusAggregate;
@@ -122,7 +122,7 @@ namespace IntegrationTests
         }
 
         [TestMethod]
-        [Description("Checks that list of bonuses can be added to database")]
+        [Description("List of bonuses can be added to database")]
         public void Save_BonusesList_2BonusesAdded()
         {
             int numberOfItemsBeforSave;
@@ -146,7 +146,7 @@ namespace IntegrationTests
         }
 
         [TestMethod]
-        [Description("Checks that list of bonuses can be updated in database")]
+        [Description("List of bonuses can be updated in database")]
         public void Save_BonusesList_2BonusesUpdated()
         {
             IList<BonusAggregate> bonusesToUpdate;

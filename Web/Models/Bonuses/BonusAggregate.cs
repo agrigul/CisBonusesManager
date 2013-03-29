@@ -44,7 +44,8 @@ namespace Web.Models.Bonuses
         /// Gets the name of the employee user.
         /// </summary>
         /// <value>The name of the employee user.</value>
-        public string EmployeeUserName
+        [Obsolete]
+        private string EmployeeUserName
         {
             get
             {
@@ -68,7 +69,8 @@ namespace Web.Models.Bonuses
         /// Gets the employee last name (ukr).
         /// </summary>
         /// <value>The employee last name (ukr)</value>
-        public string EmployeeLastNameUkr
+        [Obsolete]
+        private string EmployeeLastNameUkr
         {
             get
             {

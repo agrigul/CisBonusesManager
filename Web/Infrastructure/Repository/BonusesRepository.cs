@@ -122,7 +122,8 @@ namespace Web.Infrastructure.Repository
                                       where bonus.Employee.EmployeeId == e.EmployeeId
                                       select e).First();
 
-                    if (dbContext.Entry(bonus).State == EntityState.Detached)
+                    if ((dbContext.Entry(bonus).State == EntityState.Detached ) ||
+                         bonus.EmployeeId == 0)
                         DbSet.Add(bonus);
                 }
 
