@@ -5,6 +5,7 @@ Release/
 packages/
 bin/
 TestResults/
+_ReSharper.CisBonusManager/
 StyleCop.Cache
 *.vsmdi
 *.testsettings
