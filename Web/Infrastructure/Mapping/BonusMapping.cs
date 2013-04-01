@@ -15,18 +15,18 @@ namespace Web.Infrastructure.Mapping
         /// </summary>
         public BonusMapping()
         {
-            ToTable("CompDev.vwBonuses"); // TODO: uncomment for real database
-            //ToTable("vwBonuses");
+            //ToTable("CompDev.vwBonuses"); // TODO: uncomment for real database
+            ToTable("vwBonuses");
 
             HasKey(x => x.BonusId);
             Property(x => x.BonusId)
                 .HasColumnName("Id")
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            HasRequired(x => x.Employee)
-                        .WithMany()
-                        .HasForeignKey(x => x.EmployeeId);
-
+//            HasRequired(x => x.Employee)
+//                      .WithMany()
+//                      .HasForeignKey(x => x.EmployeeId);
+            Property(x => x.EmployeeId); // ссылка на другую таблице
             Property(x => x.Date);
             Property(x => x.Amount);
             Property(x => x.Comment);

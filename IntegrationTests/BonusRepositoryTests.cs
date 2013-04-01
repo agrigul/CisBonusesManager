@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Infrastructure.Repository;
-using Web.Models;
 using Web.Models.Bonuses;
 
 namespace IntegrationTests
@@ -122,6 +121,21 @@ namespace IntegrationTests
         }
 
         [TestMethod]
+        [Description("Employees correctly mapped to bonuses")]
+        public void GetById_NoParams_Bonus()
+        {
+            BonusAggregate bonusAggregate;
+
+            using (bonusRepository = new BonusesRepository())
+            {
+                bonusAggregate = bonusRepository.GetById(1);
+            }
+
+            Assert.AreEqual(1, bonusAggregate.BonusId);
+            
+        }
+
+        [TestMethod]
         [Description("List of bonuses can be added to database")]
         public void Save_BonusesList_2BonusesAdded()
         {
@@ -153,7 +167,7 @@ namespace IntegrationTests
             IList<BonusAggregate> updatedBonuses = new List<BonusAggregate>();
             var bonusesIds = new int[2];
             
-            string newComment = "comment on" + DateTime.Now;
+            string newComment = "comment on " + DateTime.Now;
             using (bonusRepository = new BonusesRepository())
             {
                 bonusesToUpdate = bonusRepository.FindAll().Take(2).ToList();
@@ -174,8 +188,6 @@ namespace IntegrationTests
             Assert.AreEqual(updatedBonuses[0].Comment, newComment);
             Assert.AreEqual(updatedBonuses[1].Comment, newComment);
         }
-
-
 
         /// <summary>
         /// Gets the employee by id.
