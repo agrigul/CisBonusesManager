@@ -12,6 +12,7 @@ namespace Web.Tests.Controllers.BonusesControll
     /// <summary>
     /// Test class of BonusesController
     /// </summary>
+    [TestClass]
     public class BaseBonusesTest
     {
         /// <summary>
