@@ -28,8 +28,9 @@
                 transport: {
                     type: "json",
                     read: "@Url.Action("GetPagedJsonBonuses", "Bonuses")",
-                    update: {url: function (employee) {
-                                   return "api/employees/" + employee.Id;
+                    update: {
+                                url: function (bonus) {
+                                   return "Bonuses/employees/" + employee.Id;
                                 },
                                 type: "POST"
                             },

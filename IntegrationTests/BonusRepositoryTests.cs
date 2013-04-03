@@ -133,7 +133,7 @@ namespace IntegrationTests
             }
 
             Assert.AreEqual(1, bonusAggregate.BonusId);
-            
+
         }
 
         [TestMethod]
@@ -177,7 +177,7 @@ namespace IntegrationTests
         {
             using (bonusRepository = new BonusesRepository())
             {
-               bonusRepository.FindAllWithPaging(-2, 3);
+                bonusRepository.FindAllWithPaging(-2, 3);
             }
         }
 
@@ -193,7 +193,7 @@ namespace IntegrationTests
               bonusFactory.Create(GetEmployeeById(5), DateTime.Now, 90)
             };
 
-            
+
             int numberOfCurrentBonuses;
             using (bonusRepository = new BonusesRepository())
             {
@@ -212,7 +212,7 @@ namespace IntegrationTests
             IList<BonusAggregate> bonusesToUpdate;
             IList<BonusAggregate> updatedBonuses = new List<BonusAggregate>();
             var bonusesIds = new int[2];
-            
+
             string newComment = "comment on " + DateTime.Now;
             using (bonusRepository = new BonusesRepository())
             {
