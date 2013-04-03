@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Controllers;
-using Web.Models.Bonuses;
 
 namespace Web.Tests.Controllers.BonusesControll
 {
+
     /// <summary>
     ///Test class of Index method of BonusesControll
     /// </summary>
@@ -17,70 +15,64 @@ namespace Web.Tests.Controllers.BonusesControll
         
         [TestMethod]
         [Description("Controller can return one or more bonus items")]
-        public void Index_NoParams_MoreThanOneItem()
+        public void GetPagedJsonBonuses_Skip0Take2_TwoBonuses()
         {
-            IList<BonusAggregate> bonuses;
+            dynamic bonuses;
             using (Controller = new BonusesController(RepositoryMock.Object))
             {
-                var result = Controller.Index() as ViewResult;
-                bonuses = result.Model as IList<BonusAggregate>;
+                bonuses = Controller.GetPagedJsonBonuses(2, 0).Data;
             }
-            Assert.AreEqual(2, bonuses.Count);
+            Assert.AreEqual(2, bonuses.TotalCount);
         }
 
 
         [TestMethod]
         [Description("Controller can return a bonus and it's employee's last name")]
-        public void Index_NoParams_EmployeeLastName()
+        public void GetPagedJsonBonuses_Skip0Take2_EmployeeLastName()
         {
-            IList<BonusAggregate> bonuses;
+            dynamic bonuses;
             using (Controller = new BonusesController(RepositoryMock.Object))
             {
-                var result = Controller.Index() as ViewResult;
-                 bonuses = result.Model as IList<BonusAggregate>;
+                bonuses = Controller.GetPagedJsonBonuses(2,0).Data;
             }
-
-            Assert.IsTrue(bonuses.Any(x => x.EmployeeLastName == "lastname1"));
+            Assert.IsTrue(bonuses.Data[0].EmployeeLastName == "lastname1");
             
         }
 
         [TestMethod]
         [Description("Controller can return a bonus and it's employee's amount")]
-        public void Index_NoParams_Amount()
+        public void GetPagedJsonBonuses_Skip0Take2_Amount()
         {
-            IList<BonusAggregate> bonuses;
+            dynamic bonuses;
             using (Controller = new BonusesController(RepositoryMock.Object))
             {
-                var result = Controller.Index() as ViewResult;
-                bonuses = result.Model as IList<BonusAggregate>;
+                bonuses = Controller.GetPagedJsonBonuses(2, 0).Data;
             }
-            Assert.IsTrue(bonuses.Any(x => x.Amount == 100));
+            Assert.IsTrue(bonuses.Data[0].Amount == 100);
         }
 
         [TestMethod]
         [Description("Controller can return a bonus and it's employee's date")]
-        public void Index_NoParams_Date()
+        public void GetPagedJsonBonuses_Skip0Take2_Date()
         {
-            IList<BonusAggregate> bonuses;
+            dynamic bonuses;
             using (Controller = new BonusesController(RepositoryMock.Object))
             {
-                var result = Controller.Index() as ViewResult;
-                bonuses = result.Model as IList<BonusAggregate>;
+                bonuses = Controller.GetPagedJsonBonuses(2, 0).Data;
             }
-            Assert.IsTrue(bonuses.Any(x => x.Date.Date == DateTime.Now.Date));
+            Assert.IsTrue(bonuses.Data[0].Date.Date ==  DateTime.Now.Date);
         }
 
         [TestMethod]
         [Description("Controller can return a bonus and it's employee's isActive param")]
-        public void Index_NoParams_IsActive()
+        public void GetPagedJsonBonuses_Skip0Take2_IsActive()
         {
-            IList<BonusAggregate> bonuses;
+            dynamic bonuses;
             using (Controller = new BonusesController(RepositoryMock.Object))
             {
-                var result = Controller.Index() as ViewResult;
-                bonuses = result.Model as IList<BonusAggregate>;
+                bonuses = Controller.GetPagedJsonBonuses(2, 0).Data;
             }
-            Assert.IsTrue(bonuses.Any(x => x.IsActive == false));
+            Assert.IsTrue(bonuses.Data[0].IsActive == false);
         }
     }
 }

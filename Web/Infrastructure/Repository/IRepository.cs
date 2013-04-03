@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Web.Models;
 
 namespace Web.Infrastructure.Repository
 {
@@ -14,6 +15,14 @@ namespace Web.Infrastructure.Repository
         /// <returns>IEnumerable{BonusAggregate}.</returns>
         IList<T> FindAll();
 
+        /// <summary>
+        /// Finds all items with paging.
+        /// </summary>
+        /// <param name="skip">Number of items to skip</param>
+        /// <param name="take">Number of items to take.</param>
+        /// <returns>PagedResponse{`0}.</returns>
+        PagedResponse<T> FindAllWithPaging(int skip, int take);
+        
         /// <summary>
         /// Gets bonus by id.
         /// </summary>

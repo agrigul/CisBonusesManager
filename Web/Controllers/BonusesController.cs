@@ -41,9 +41,20 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
         {
-            IList<BonusAggregate> bonuses = BonusesRepository.FindAll();
+            //IList<BonusAggregate> bonuses = BonusesRepository.FindAll();
+           return View();
+        }
 
-            return View(bonuses);
+        /// <summary>
+        /// Gets the paged bonuses list for table.
+        /// </summary>
+        /// <param name="take">Records to take.</param>
+        /// <param name="skip">Records to skip.</param>
+        /// <returns>JsonResult of bonuses</returns>
+        public JsonResult GetPagedJsonBonuses(int take, int skip)
+        {
+            PagedResponse<BonusAggregate> bonuses = BonusesRepository.FindAllWithPaging(skip, take);
+            return Json(bonuses, JsonRequestBehavior.AllowGet);
         }
 
         // GET: /Bonuses/Details/5
@@ -62,6 +73,7 @@ namespace Web.Controllers
             {
                 return HttpNotFound();
             }
+            
             return View(bonusAggregate);
         }
 

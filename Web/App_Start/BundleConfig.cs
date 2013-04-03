@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace Web
 {
@@ -17,6 +16,18 @@ namespace Web
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.unobtrusive*",
                         "~/Scripts/jquery.validate*"));
+
+
+            //kendo
+            bundles.Add(new ScriptBundle("~/bundles/kendo").Include(
+            "~/Scripts/kendo/2013.1.319/kendo.web.*", // or kendo.all.* if you want to use Kendo UI Web and Kendo UI DataViz
+            "~/Scripts/kendo/2013.1.319/kendo.aspnetmvc.*"));
+
+            bundles.Add(new StyleBundle("~/Content/kendo/2013.1.319/css").Include(
+                "~/Content/kendo/2013.1.319/kendo.common.*",
+                "~/Content/kendo/2013.1.319/kendo.default.*"));
+            // end kendo
+
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
@@ -38,6 +49,9 @@ namespace Web
                         "~/Content/themes/base/jquery.ui.datepicker.css",
                         "~/Content/themes/base/jquery.ui.progressbar.css",
                         "~/Content/themes/base/jquery.ui.theme.css"));
+
+
+            bundles.IgnoreList.Clear();
         }
     }
 }

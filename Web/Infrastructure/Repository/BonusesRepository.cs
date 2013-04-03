@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using Web.Models;
 using Web.Models.Bonuses;
 
 namespace Web.Infrastructure.Repository
@@ -71,6 +72,25 @@ namespace Web.Infrastructure.Repository
         }
 
         /// <summary>
+        /// Fins all with paging.
+        /// </summary>
+        /// <param name="skip">The skip.</param>
+        /// <param name="take">The take.</param>
+        /// <returns>PagedResponse{BonusAggregate}.</returns>
+        public PagedResponse<BonusAggregate> FindAllWithPaging(int skip, int take)
+        {
+            List<BonusAggregate> result= DbSet.Include(b => b.Employee)
+                                               .OrderBy(x => x.BonusId)
+                                               .Skip(skip)
+                                               .Take(take)
+                                               .ToList();
+
+            int numberOfItemsInDb = DbSet.Count();
+            return new PagedResponse<BonusAggregate>(result, numberOfItemsInDb);
+
+        }
+
+        /// <summary>
         /// Gets bonus by id.
         /// </summary>
         /// <param name="id">The id.</param>
@@ -90,7 +110,7 @@ namespace Web.Infrastructure.Repository
         /// <exception cref="System.ArgumentNullException">Save;BonusAggregate item shouldn't be null</exception>
         public void Save(BonusAggregate item)
         {
-           Save(new List<BonusAggregate>{item});
+            Save(new List<BonusAggregate> { item });
         }
 
         /// <summary>
@@ -110,31 +130,31 @@ namespace Web.Infrastructure.Repository
             try
             {
                 var employeesRepository = new EmployeesRepository(dbContext);
-                
+
                 //context doesn't want to save correctly without previous request
-                List<int> employees = (from b in items 
+                List<int> employees = (from b in items
                                        select b.Employee.EmployeeId).ToList();
                 IList<Employee> attachedEmployees = employeesRepository.GetByIdList(employees);
-                
+
                 foreach (BonusAggregate bonus in items)
                 {
                     bonus.Employee = (from e in attachedEmployees
                                       where bonus.Employee.EmployeeId == e.EmployeeId
                                       select e).First();
 
-                    if ((dbContext.Entry(bonus).State == EntityState.Detached ) ||
+                    if ((dbContext.Entry(bonus).State == EntityState.Detached) ||
                          bonus.EmployeeId == 0)
                         DbSet.Add(bonus);
                 }
 
-//                   var currentEmployee= dbContext.Employees.Find(bonus.Employee.EmployeeId); // doesn't make a request to db
-//                   dbContext.Entry(currentEmployee).State = EntityState.Unchanged;
-//                   dbContext.Entry(currentEmployee).CurrentValues.SetValues(bonus.Employee);
-//                    dbContext.Bonuses.Attach(bonus);
-//                    dbContext.Entry(bonus).State = EntityState.Modified;
+                //                   var currentEmployee= dbContext.Employees.Find(bonus.Employee.EmployeeId); // doesn't make a request to db
+                //                   dbContext.Entry(currentEmployee).State = EntityState.Unchanged;
+                //                   dbContext.Entry(currentEmployee).CurrentValues.SetValues(bonus.Employee);
+                //                    dbContext.Bonuses.Attach(bonus);
+                //                    dbContext.Entry(bonus).State = EntityState.Modified;
 
-                    // DbSet.Add(bonus);
-                
+                // DbSet.Add(bonus);
+
                 dbContext.SaveChanges();
             }
             catch (DbUpdateException e)
@@ -148,6 +168,6 @@ namespace Web.Infrastructure.Repository
                 throw;
             }
         }
-       
+
     }
 }

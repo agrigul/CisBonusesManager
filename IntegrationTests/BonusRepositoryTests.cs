@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Infrastructure.Repository;
+using Web.Models;
 using Web.Models.Bonuses;
 
 namespace IntegrationTests
@@ -133,6 +134,51 @@ namespace IntegrationTests
 
             Assert.AreEqual(1, bonusAggregate.BonusId);
             
+        }
+
+        [TestMethod]
+        [Description("Request with paging returns correct total number of items in table")]
+        public void FindAllWithPaging_Skip2Take3_CorrectTotalCount()
+        {
+            IList<BonusAggregate> notSkipedBonuses;
+            PagedResponse<BonusAggregate> skipedBonuses;
+
+            using (bonusRepository = new BonusesRepository())
+            {
+                notSkipedBonuses = bonusRepository.FindAll();
+                skipedBonuses = bonusRepository.FindAllWithPaging(2, 3);
+            }
+            Assert.AreEqual(skipedBonuses.TotalCount, notSkipedBonuses.Count);
+        }
+
+        [TestMethod]
+        [Description("Skip two records and take next 3 records")]
+        public void FindAllWithPaging_Skip2Take3_3bonuses()
+        {
+            IList<BonusAggregate> notSkipedBonuses;
+            PagedResponse<BonusAggregate> skipedBonuses;
+
+            using (bonusRepository = new BonusesRepository())
+            {
+                notSkipedBonuses = bonusRepository.FindAll();
+                skipedBonuses = bonusRepository.FindAllWithPaging(2, 3);
+            }
+
+            Assert.AreEqual(skipedBonuses.TotalCount, notSkipedBonuses.Count);
+            Assert.AreEqual(notSkipedBonuses[2].BonusId, skipedBonuses.Data[0].BonusId);
+            Assert.AreEqual(notSkipedBonuses[4].BonusId, skipedBonuses.Data[2].BonusId);
+
+        }
+
+        [TestMethod]
+        [Description("Send negative take argument to database")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void FindAllWithPaging_NegativeSkip2Take3_3bonuses()
+        {
+            using (bonusRepository = new BonusesRepository())
+            {
+               bonusRepository.FindAllWithPaging(-2, 3);
+            }
         }
 
         [TestMethod]

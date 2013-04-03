@@ -66,6 +66,17 @@ namespace Web.Infrastructure.Repository
             return DbSet.ToList();
         }
 
+        /// <summary>
+        /// Finds all with paging.
+        /// </summary>
+        /// <param name="skip">The skip.</param>
+        /// <param name="take">The take.</param>
+        /// <returns>PagedResponse{Employee}.</returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public PagedResponse<Employee> FindAllWithPaging(int skip, int take)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Gets Employee by id.

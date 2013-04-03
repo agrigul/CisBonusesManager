@@ -1,70 +1,94 @@
 ﻿@using Web.Models.Bonuses
 @model IEnumerable<BonusAggregate>
-
 @{
     ViewBag.Title = "Index";
 }
-
-<h2>Index</h2>
-
+<h2>
+    Bonuses</h2>
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New Bonus", "Create")
 </p>
-<table>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.EmployeeLastName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Amount)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Comment)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsActive)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Ulc)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Dlc)
-        </th>
-        <th></th>
-    </tr>
+<div>
+    <div id="bonusesGrid">
+    </div>
+    <script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+        
+//            $.ajax({
+//              url: "@Url.Action("GetPagedJsonBonuses", "Bonuses")",
+//              async: false,
+//              dataType: 'json',
+//              success: function (json) {
+//                  testdata = json;
+//              }
+//            });
 
-@foreach (var item in Model) {
-    <tr>
-        @Html.HiddenFor(modelItem => item.BonusId)
-        @Html.HiddenFor(modelItem => item.EmployeeId)
-        <td>
-            @Html.DisplayFor(modelItem => item.EmployeeLastName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Amount)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Comment)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.IsActive)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Ulc)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Dlc)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.BonusId }) |
-        </td>
-    </tr>
-}
+            // bind json result from /Bonuses/GetPagedJsonBonuses
+            var bonusesDataSource = new kendo.data.DataSource({
+                transport: {
+                    type: "json",
+                    read: "@Url.Action("GetPagedJsonBonuses", "Bonuses")",
+                    update: {url: function (employee) {
+                                   return "api/employees/" + employee.Id;
+                                },
+                                type: "POST"
+                            },
+                },
+                pageSize: 5,
+                serverPaging: true,
+                schema: {
+                    data: "Data", // PagedResponse.Data
+                    total : "TotalCount", // PagedResponse.TotalCount
+                    model: {id: "BonusId",
+                        fields: {
+                            EmployeeLastName: {type : "string", 
+                                editable: true, 
+                                nullable: false, 
+                                validation: { required: {message: "Employee's last name is required"}}
+                            },
+                            Date : {type:"date", editable: true, nullable:false,validation: { required: true}},
+                            Amount: {type: "number", editable: true, nullable:false,validation: { required: true}},
+                            Comment: {type : "string", editable: true, nullable: false, validation: { required: true}},
+                            isAcrive : {type: "boolean", editable: true, validation: { required: true}},
+                            Ulc : {type : "string", editable: false},
+                            Dlc : {type : "date", editable:false}
+                            
+                        } // fields
+                    } // model
+                }// schema 
+            }); 
 
-</table>
+            // creates grid control
+            $("#bonusesGrid").kendoGrid({
+                dataSource:  bonusesDataSource,
+                pageable: true,
+                editable: "inline",
+                columns: [
+                    {   field: "EmployeeLastName",
+                        title: "Last Name title"
+                    },
+                    "Amount",
+                    {
+                        field: "Date",
+                        template: '#= kendo.toString(Date,"dd MMMM yyyy") #'
+                    },
+                    "Comment",
+                    {
+                        field: "isAcrive",
+                        title: "Is Active"
+                    }, {
+                        field: "Ulc",
+                        title: "Ulc title"
+                    }, {
+                        field: "Dlc",
+                        title: "Dlc title",
+                        template: '#= kendo.toString(Dlc,"dd MMMM yyyy") #'
+                    },
+                    { command: ["edit"], title: " " }
+                ]
+            });
+
+            
+        }); // end of ready function
+    </script>
+</div>
