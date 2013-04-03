@@ -41,13 +41,11 @@ namespace Web.Tests.Controllers
         [TestMethod]
         public void Contact()
         {
-            ViewResult result; 
             // Arrange
-            using (var controller = new HomeController())
-            {
-                // Act
-                result = controller.Contact() as ViewResult;
-            }
+            HomeController controller = new HomeController();
+
+            // Act
+            ViewResult result = controller.Contact() as ViewResult;
 
             // Assert
             Assert.IsNotNull(result);

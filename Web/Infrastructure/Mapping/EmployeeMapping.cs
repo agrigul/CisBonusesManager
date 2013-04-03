@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
-using Web.Models.Bonuses;
+using Web.Models;
 
 namespace Web.Infrastructure.Mapping
 {
@@ -16,9 +16,9 @@ namespace Web.Infrastructure.Mapping
         {
             ToTable("vwEmployeesLookup");
 
-            HasKey(x => x.EmployeeId);
-            Property(x => x.EmployeeId).HasColumnName("EmployeeID")
-                                       .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            HasKey(x => x.Id);
+            Property(x => x.Id).HasColumnName("EmployeeID")
+                               .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             Property(x => x.UserName).IsRequired();
             Property(x => x.LastName).IsRequired();
             Property(x => x.LastNameUkr).IsRequired();

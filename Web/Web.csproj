@@ -16,6 +16,8 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>false</UseIISExpress>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -168,16 +170,15 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Infrastructure\Repository\BonusesRepository.cs" />
     <Compile Include="Infrastructure\Repository\EmployeesRepository.cs" />
-    <Compile Include="Models\Bonuses\BonusFactory.cs" />
-    <Compile Include="Infrastructure\Repository\IRepository.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\Mapping\EmployeeMapping.cs" />
     <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\Bonuses\BonusAggregate.cs" />
-    <Compile Include="Models\Bonuses\Employee.cs" />
+    <Compile Include="Models\Bonus.cs" />
+    <Compile Include="Models\Employee.cs" />
     <Compile Include="Infrastructure\Repository\DatabaseContext.cs" />
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
     <Compile Include="Models\PagedResponse.cs" />
@@ -869,6 +870,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

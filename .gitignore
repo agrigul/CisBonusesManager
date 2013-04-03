@@ -1,12 +1,13 @@
 # git ignore file
 _ReSharper.Web/
-_ReSharper.CisBonusManager/
 Debug/
 Release/
 packages/
 bin/
 TestResults/
+_ReSharper.CisBonusManager/
 StyleCop.Cache
+CisBonusManager.suo
 *.vsmdi
 *.testsettings
 *.trx
@@ -14,3 +15,5 @@ StyleCop.Cache
 *.crc
 *.version
 *.dat
+*.user
+*.suo

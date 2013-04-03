@@ -1,10 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Web.Infrastructure.Repository;
-using Web.Models.Bonuses;
-
+using Web.Models;
+using Web.Models.Repositories;
 
 namespace IntegrationTests
 {
@@ -25,6 +26,7 @@ namespace IntegrationTests
         [TestInitialize]
         public void TestInitilalization()
         {
+            repository = new EmployeesRepository();
         }
 
         /// <summary>
@@ -83,44 +85,17 @@ namespace IntegrationTests
         #endregion
 
         [TestMethod]
-        [Description("Repository can select entities form database")]
+        [Description("Checks that repository can select entities form database")]
         public void GetFirstEmployee_noParams_employee()
         {
             Employee employee;
 
-            using (repository = new EmployeesRepository())
+            using (repository)
             {
                 employee = repository.FindAll().FirstOrDefault();
             }
 
             Assert.IsNotNull(employee);
-        }
-
-
-        [TestMethod]
-        [Description("Repository can select entities form database by list of ids")]
-        public void GetEmployees_ListOfIds_ListOfEmployees()
-        {
-            IList<Employee> employee;
-
-            using (var repository = new EmployeesRepository())
-            {
-                var ids = new int[5] {1, 2, 3, 4, 5};
-                employee = repository.GetByIdList(ids);
-            }
-
-            Assert.IsTrue(employee.Count > 1);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(NotSupportedException))]
-        [Description("Repository don't save employees in database")]
-        public void Save_noParams_exception()
-        {
-            using (repository = new EmployeesRepository())
-            {
-                repository.Save(new Employee("","",""));
-            }
         }
     }
 }
