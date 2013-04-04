@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Web.Models.Bonuses
 {
     /// <summary>
@@ -32,17 +30,10 @@ namespace Web.Models.Bonuses
         public string LastNameUkr { get;private set; }
         
         /// <summary>
-        /// Gets or sets the bonuses list. Filed executed for one-to-many relations only
-        /// </summary>
-        /// <value>The bonuses list.</value>
-        //public virtual IList<BonusAggregate> BonusesList { get; private set; }
-
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Employee"/> class.
         /// 
         /// </summary>
-        protected Employee()
+        public Employee()
         {
             //this constructor is for EF use only
         }

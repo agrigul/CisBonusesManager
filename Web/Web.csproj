@@ -170,6 +170,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Infrastructure\Repository\BonusesRepository.cs" />
     <Compile Include="Infrastructure\Repository\EmployeesRepository.cs" />
+    <Compile Include="Models\Bonuses\BonusDto.cs" />
     <Compile Include="Models\Bonuses\BonusFactory.cs" />
     <Compile Include="Infrastructure\Repository\IRepository.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
@@ -829,9 +830,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Bonuses\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Bonuses\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Bonuses\Create.cshtml" />

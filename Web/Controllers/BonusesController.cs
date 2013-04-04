@@ -1,4 +1,7 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Web.Mvc;
 using Web.Models;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
@@ -39,8 +42,7 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
         {
-            //IList<BonusAggregate> bonuses = BonusesRepository.FindAll();
-           return View();
+            return View();
         }
 
         /// <summary>
@@ -55,102 +57,96 @@ namespace Web.Controllers
             return Json(bonuses, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: /Bonuses/Details/5
         /// <summary>
-        /// Returns the specified id.
+        /// Gets the list of employees by last name.
         /// </summary>
-        /// <param name="id">The id.</param>
-        /// <returns>ActionResult.</returns>
-        public ActionResult Details(int id = 0)
+        /// <returns>JsonResult.</returns>
+        public JsonResult GetJsonEmployeesByLastName()
         {
-            //BonusAggregate bonus = db.Bonuses.Find(id);
+            string lastName = Request.Params["filter[filters][0][value]"];
 
-            BonusAggregate bonusAggregate = BonusesRepository.GetById(id);
-
-            if (bonusAggregate == null)
-            {
-                return HttpNotFound();
-            }
+            IList<Employee> employees = new List<Employee>();
             
-            return View(bonusAggregate);
+            if (String.IsNullOrEmpty(lastName) == false)
+            {
+                using (var employeesRepository = new EmployeesRepository())
+                {
+                    employees = employeesRepository.FindByLastName(lastName);
+                }
+            }
+
+            return Json(employees, JsonRequestBehavior.AllowGet);
         }
 
+        //        //
+        //        // GET: /Bonuses/Create
         //
-        // GET: /Bonuses/Create
+        //        /// <summary>
+        //        /// Creates new bonus.
+        //        /// </summary>
+        //        /// <returns>ActionResult.</returns>
+        //        public ActionResult Create()
+        //        {
+        //            //   ViewBag.Id = new SelectList(db.Employees, "Id", "UserName");
+        //            return View();
+        //        }
 
-        /// <summary>
-        /// Creates new bonus.
-        /// </summary>
-        /// <returns>ActionResult.</returns>
-        public ActionResult Create()
-        {
-            //   ViewBag.Id = new SelectList(db.Employees, "Id", "UserName");
-            return View();
-        }
-
-        //
-        // POST: /Bonuses/Create
 
         /// <summary>
         /// Creates the specified bonus.
         /// </summary>
-        /// <param name="bonusAggregate">The bonus.</param>
-        /// <returns>ActionResult.</returns>
+        /// <param name="bonusDto">The bonus DTO object.</param>
+        /// <returns>Http status code result.</returns>
         [HttpPost]
-        public ActionResult Create(BonusAggregate bonusAggregate)
+        public HttpStatusCodeResult Create(BonusDto bonusDto)
         {
-            if (ModelState.IsValid)
-            {
-                BonusesRepository.Save(bonusAggregate);
-            
-                //                db.Bonuses.Add(bonus);
-                //                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            //ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
-            return View(bonusAggregate);
-        }
-
-        //
-        // GET: /Bonuses/Edit/5
-
-        public ActionResult Edit(int id = 0)
-        {
-            //BonusAggregate bonus = db.Bonuses.Find(id);
-            BonusAggregate bonusAggregate;
             using (BonusesRepository = new BonusesRepository())
             {
-                bonusAggregate = BonusesRepository.GetById(id);
+                BonusAggregate bonus = new BonusFactory().Create(bonusDto);
+                BonusesRepository.Save(bonus);
             }
 
-            if (bonusAggregate == null)
-            {
-                return HttpNotFound();
-            }
-            //ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
-            return View(bonusAggregate);
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
-        //
-        // POST: /Bonuses/Edit/5
+
 
         /// <summary>
         /// Edits the specified BonusAggregate.
         /// </summary>
-        /// <param name="bonusAggregate">The bonus.</param>
-        /// <returns>ActionResult.</returns>
-        [HttpPost]
-        public ActionResult Edit(BonusAggregate bonusAggregate)
+        /// <param name="bonusDto">The bonus DTO object.</param>
+        /// <returns>Http status code result..</returns>
+        [HttpPut]
+        public HttpStatusCodeResult Edit(BonusDto bonusDto)
         {
-            //            if (ModelState.IsValid)
-            //            {
-            //                db.Entry(bonus).State = EntityState.Modified;
-            //                db.SaveChanges();
-            //                return RedirectToAction("Index");
-            //            }
-            //            ViewBag.Id = new SelectList(db.Employees, "Id", "UserName", bonus.Id);
-            return View(bonusAggregate);
+            if(bonusDto == null)
+                throw new ArgumentNullException("bonusDto can't be null in controller Edit");
+
+            Employee employee = null;
+            if(bonusDto.EmployeeId != 0)
+            using(var employeeRepository = new  EmployeesRepository())
+            {
+                employee = employeeRepository.GetById(bonusDto.EmployeeId);
+            }
+
+            using (BonusesRepository = new BonusesRepository())
+            {
+                BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
+                bonus.Comment = bonusDto.Comment;
+                bonus.Amount = bonusDto.Amount;
+                bonus.Date = bonusDto.Date;
+                bonus.IsActive = bonusDto.IsActive;
+
+                if (employee != null &&
+                    employee.EmployeeId != bonus.EmployeeId)
+                    bonus.Employee = employee;
+
+                BonusesRepository.Save(bonus);
+            }
+
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
         }
 
         /// <summary>
@@ -159,7 +155,7 @@ namespace Web.Controllers
         /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if(BonusesRepository != null)
+            if (BonusesRepository != null)
                 BonusesRepository.Dispose();
             BonusesRepository = null;
 

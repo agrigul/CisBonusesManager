@@ -1,5 +1,5 @@
 ﻿@using Web.Models.Bonuses
-@model IEnumerable<BonusAggregate>
+@model IEnumerable<BonusDto>
 @{
     ViewBag.Title = "Index";
 }
@@ -11,7 +11,11 @@
 <div>
     <div id="bonusesGrid">
     </div>
-    <script type="text/javascript" language="javascript">
+    <div id="employee-view">
+        <input id="employee" />
+    </div>
+</div>
+<script type="text/javascript" language="javascript">
         $(document).ready(function () {
         
 //            $.ajax({
@@ -22,26 +26,93 @@
 //                  testdata = json;
 //              }
 //            });
+            
+                
+            //NOTE:
+            // this a hack. I didn't find the answer  how to bind employee's
+            // id and name from combobox.EmployeeId to selected row's model.EmployeeId
+            var newEmployeeId;
+            var newEmployeeName;
+            function setNewEmployeeIdAndName(id, name) {
+                newEmployeeId = id;
+                newEmployeeName = name;
+            }
+            
 
+           var employeesDataSource = new kendo.data.DataSource({
+                type: "json",
+                serverFiltering : true,
+                transport: {
+                    read: "@Url.Action("GetJsonEmployeesByLastName", "Bonuses")", 
+                },
+                parameterMap: function (options, operation) {
+                        if (operation === "update" || operation === "create") {
+                            setNewEmployeeIdAndName(options.Id, options.LastName);
+                        }
+                        return options;
+                    },
+
+                schema : {
+                    model:{id : "EmployeeId",
+                           fields: {
+                                LastName: {type : "string", 
+                                    editable: true, 
+                                    nullable: false, 
+                                    validation: { required: {message: "Employee's last name is required"}}
+                                }} 
+                    }
+                }
+            });
+            //$('<input required data-text-field="LastName" data-value-field="EmployeeId" data-bind="value:' + options.field + '"/>')
+            function employeeComboboxEditor(container, options) {
+                    $('<input data-bind="value:' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoComboBox({     
+                            dataTextField: "LastName",
+                            dataValueField: "EmployeeId",
+                            filter: "contains",
+                            change: function(e) {
+                                        if(this.value() !== undefined && this.text() !== undefined)
+                                        setNewEmployeeIdAndName(this.value(),this.text()); // set's the local variables to update values of current row.
+                                    },
+                            dataSource: employeesDataSource
+                        });
+                }
+          
+            
             // bind json result from /Bonuses/GetPagedJsonBonuses
             var bonusesDataSource = new kendo.data.DataSource({
                 transport: {
                     type: "json",
                     read: "@Url.Action("GetPagedJsonBonuses", "Bonuses")",
-                    update: {
-                                url: function (bonus) {
-                                   return "Bonuses/employees/" + employee.Id;
-                                },
-                                type: "POST"
+                    update: { 
+                                url: "@Url.Action("Edit", "Bonuses")",
+                                type: "PUT"
                             },
+                    create: {
+                            url: "@Url.Action("Create", "Bonuses")",
+                            type: "POST"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation === "update" || operation === "create") {
+                            var d = new Date(options.Date);
+                            // correct format for conversion 
+                            options.Date = kendo.toString(d, "MM/dd/yyyy");
+
+                            options.EmployeeId = newEmployeeId;
+                            
+                        }
+                        return options;
+                    }
                 },
-                pageSize: 5,
+                pageSize: 15,
                 serverPaging: true,
                 schema: {
                     data: "Data", // PagedResponse.Data
                     total : "TotalCount", // PagedResponse.TotalCount
-                    model: {id: "BonusId",
+                    model: {id: "BonusId",  // Data
                         fields: {
+                            EmployeeId : {type: "number"},
                             EmployeeLastName: {type : "string", 
                                 editable: true, 
                                 nullable: false, 
@@ -50,7 +121,7 @@
                             Date : {type:"date", editable: true, nullable:false,validation: { required: true}},
                             Amount: {type: "number", editable: true, nullable:false,validation: { required: true}},
                             Comment: {type : "string", editable: true, nullable: false, validation: { required: true}},
-                            isAcrive : {type: "boolean", editable: true, validation: { required: true}},
+                            isAcrive : {type: "boolean", editable: true},
                             Ulc : {type : "string", editable: false},
                             Dlc : {type : "date", editable:false}
                             
@@ -63,33 +134,58 @@
             $("#bonusesGrid").kendoGrid({
                 dataSource:  bonusesDataSource,
                 pageable: true,
+                toolbar: ["create"],
                 editable: "inline",
                 columns: [
+                    {
+                        field: "BonusId",
+                        hidden: true
+                    },
+                    {
+                        field: "EmployeeId",
+                        hidden: true
+                    },
                     {   field: "EmployeeLastName",
-                        title: "Last Name title"
+                        title: "Employee",
+                        editor: employeeComboboxEditor,
+                        template: "#=EmployeeLastName#"
                     },
                     "Amount",
                     {
                         field: "Date",
-                        template: '#= kendo.toString(Date,"dd MMMM yyyy") #'
+                        template: '#= kendo.toString(Date,"MM/dd/yyyy") #' 
                     },
                     "Comment",
                     {
-                        field: "isAcrive",
-                        title: "Is Active"
+                        field: "isActive",
+                        title: "Active"
                     }, {
                         field: "Ulc",
-                        title: "Ulc title"
+                        title: "ULC"
                     }, {
                         field: "Dlc",
-                        title: "Dlc title",
-                        template: '#= kendo.toString(Dlc,"dd MMMM yyyy") #'
+                        title: "DLC",
+                        template: '#= kendo.toString(Dlc,"MM/dd/yyyy") #' 
                     },
                     { command: ["edit"], title: " " }
-                ]
+                ],
+                save: function (e) {
+                    if(newEmployeeId !== undefined && newEmployeeName!== undefined) {
+                        e.model.EmployeeId = newEmployeeId; // it's a hack to bind model and combobox
+                        e.model.EmployeeLastName = newEmployeeName;
+                    }
+                }
             });
+            
+
+
+
+           
+
+ 
+
 
             
         }); // end of ready function
-    </script>
-</div>
+</script>
+</div> 

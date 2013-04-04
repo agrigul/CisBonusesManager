@@ -112,6 +112,22 @@ namespace IntegrationTests
             Assert.IsTrue(employee.Count > 1);
         }
 
+
+        [TestMethod]
+        [Description("Repository can select entities by last name")]
+        public void FindByFilter_FilterString_ListOfEmployees()
+        {
+            IList<Employee> employee;
+            string lastNameFilter = "Aleksandr";
+
+            using (var repository = new EmployeesRepository())
+            {
+                employee = repository.FindByLastName(lastNameFilter);
+            }
+            
+            Assert.IsTrue(employee.All(x => x.LastName.Contains(lastNameFilter)));
+        }
+
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
         [Description("Repository don't save employees in database")]

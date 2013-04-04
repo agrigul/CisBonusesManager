@@ -133,5 +133,17 @@ namespace Web.Infrastructure.Repository
         {
             throw new NotSupportedException("Employee entities can't be saved");
         }
+
+        /// <summary>
+        /// Finds employees the by filter.
+        /// </summary>
+        /// <param name="filter">The filter.</param>
+        /// <returns>IList{Employee}.</returns>
+        public IList<Employee> FindByLastName(string filter)
+        {
+            return (from e in DbSet
+                    where e.LastName.Contains(filter)
+                    select e).ToList();
+        }
     }
 }

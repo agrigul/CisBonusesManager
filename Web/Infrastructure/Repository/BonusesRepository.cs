@@ -80,7 +80,7 @@ namespace Web.Infrastructure.Repository
         public PagedResponse<BonusAggregate> FindAllWithPaging(int skip, int take)
         {
             List<BonusAggregate> result= DbSet.Include(b => b.Employee)
-                                               .OrderBy(x => x.BonusId)
+                                               .OrderByDescending(x => x.Date)
                                                .Skip(skip)
                                                .Take(take)
                                                .ToList();
@@ -133,18 +133,25 @@ namespace Web.Infrastructure.Repository
 
                 //context doesn't want to save correctly without previous request
                 List<int> employees = (from b in items
-                                       select b.Employee.EmployeeId).ToList();
+                                       select b.EmployeeId).ToList();
                 IList<Employee> attachedEmployees = employeesRepository.GetByIdList(employees);
 
                 foreach (BonusAggregate bonus in items)
                 {
                     bonus.Employee = (from e in attachedEmployees
-                                      where bonus.Employee.EmployeeId == e.EmployeeId
+                                      where bonus.EmployeeId == e.EmployeeId
                                       select e).First();
 
-                    if ((dbContext.Entry(bonus).State == EntityState.Detached) ||
-                         bonus.EmployeeId == 0)
-                        DbSet.Add(bonus);
+                    if ((dbContext.Entry(bonus).State == EntityState.Detached) &&
+                         bonus.BonusId == 0)
+                        DbSet.Add(bonus); // Create
+
+                    if ((dbContext.Entry(bonus).State == EntityState.Detached) &&
+                         bonus.BonusId != 0)
+                    {
+                        (dbContext.Entry(bonus)).State = EntityState.Modified;
+                        DbSet.Attach(bonus); // Update
+                    }
                 }
 
                 //                   var currentEmployee= dbContext.Employees.Find(bonus.Employee.EmployeeId); // doesn't make a request to db
