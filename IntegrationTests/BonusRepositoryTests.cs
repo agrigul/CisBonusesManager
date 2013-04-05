@@ -43,10 +43,10 @@ namespace IntegrationTests
         [TestCleanup]
         public void TestClean()
         {
-            if (bonusRepository != null)
-                bonusRepository.Dispose();
-            if (employeeRepository != null)
-                employeeRepository.Dispose();
+//            if (bonusRepository != null)
+//                bonusRepository.Dispose();
+//            if (employeeRepository != null)
+//                employeeRepository.Dispose();
 
             bonusRepository = null;
             employeeRepository = null;
@@ -98,8 +98,9 @@ namespace IntegrationTests
         {
             IList<BonusAggregate> bonuses;
 
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 bonuses = bonusRepository.FindAll();
             }
 
@@ -113,8 +114,9 @@ namespace IntegrationTests
         {
             BonusAggregate bonusAggregate;
 
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 bonusAggregate = bonusRepository.FindAll().First();
             }
 
@@ -127,8 +129,9 @@ namespace IntegrationTests
         {
             BonusAggregate bonusAggregate;
 
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 bonusAggregate = bonusRepository.GetById(1);
             }
 
@@ -143,8 +146,9 @@ namespace IntegrationTests
             IList<BonusAggregate> notSkipedBonuses;
             PagedResponse<BonusAggregate> skipedBonuses;
 
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 notSkipedBonuses = bonusRepository.FindAll();
                 skipedBonuses = bonusRepository.FindAllWithPaging(2, 3);
             }
@@ -158,8 +162,9 @@ namespace IntegrationTests
             IList<BonusAggregate> notSkipedBonuses;
             PagedResponse<BonusAggregate> skipedBonuses;
 
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 notSkipedBonuses = bonusRepository.FindAll();
                 skipedBonuses = bonusRepository.FindAllWithPaging(2, 3);
             }
@@ -175,8 +180,9 @@ namespace IntegrationTests
         [ExpectedException(typeof(ArgumentException))]
         public void FindAllWithPaging_NegativeSkip2Take3_3bonuses()
         {
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 bonusRepository.FindAllWithPaging(-2, 3);
             }
         }
@@ -195,8 +201,9 @@ namespace IntegrationTests
 
 
             int numberOfCurrentBonuses;
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 numberOfItemsBeforSave = bonusRepository.FindAll().Count();
                 bonusRepository.Save(bonusesList);
                 numberOfCurrentBonuses = bonusRepository.FindAll().Count();
@@ -214,8 +221,9 @@ namespace IntegrationTests
             var bonusesIds = new int[2];
 
             string newComment = "comment on " + DateTime.Now;
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 bonusesToUpdate = bonusRepository.FindAll().Take(2).ToList();
                 bonusesToUpdate[0].Comment = newComment;
                 bonusesToUpdate[1].Comment = newComment;
@@ -225,8 +233,9 @@ namespace IntegrationTests
                 bonusRepository.Save(bonusesToUpdate);
             }
 
-            using (bonusRepository = new BonusesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                bonusRepository = new BonusesRepository(dbContext);
                 updatedBonuses.Add(bonusRepository.GetById(bonusesIds[0]));
                 updatedBonuses.Add(bonusRepository.GetById(bonusesIds[1]));
             }
@@ -244,8 +253,9 @@ namespace IntegrationTests
         {
             Employee employee;
 
-            using (employeeRepository = new EmployeesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                employeeRepository = new EmployeesRepository(dbContext);
                 employee = employeeRepository.GetById(id);
             }
 

@@ -39,14 +39,28 @@ namespace Web.Tests.Controllers.BonusesControll
         public void TestInitilalization()
         {
             RepositoryMock = new Mock<IRepository<BonusAggregate>>();
-            RepositoryMock.Setup(x => x.FindAllWithPaging(0, 2)).Returns(PreparedBonusesForTest);
+            
+            RepositoryMock.Setup(x => x.FindAll(0, 2,
+                                                It.IsAny<string>(),
+                                                SortingDirection.Desc,
+                                                It.IsAny<string>(), 
+                                                It.IsAny<string>()))
+                                               .Returns(PreparedBonusesForTest);
 
 
             RepositoryWithExceptionMock = new Mock<IRepository<BonusAggregate>>();
-            RepositoryWithExceptionMock.Setup(x => x.FindAllWithPaging(It.IsAny<int>(), -1))
-                .Throws<ArgumentOutOfRangeException>();
+            RepositoryWithExceptionMock.Setup(x => x.FindAll(0, -1,
+                                                It.IsAny<string>(),
+                                                SortingDirection.Desc,
+                                                It.IsAny<string>(), 
+                                                It.IsAny<string>()))
+                                            .Throws<ArgumentOutOfRangeException>();
 
-            RepositoryWithExceptionMock.Setup(x => x.FindAllWithPaging(It.IsAny<int>(), 0))
+            RepositoryWithExceptionMock.Setup(x => x.FindAll(It.IsAny<int>(), 0,
+                                                It.IsAny<string>(),
+                                                SortingDirection.Desc,
+                                                It.IsAny<string>(), 
+                                                It.IsAny<string>()))
                 .Returns(() => new PagedResponse<BonusAggregate>(null, 0));
         }
 

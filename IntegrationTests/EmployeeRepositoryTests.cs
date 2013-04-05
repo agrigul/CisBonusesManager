@@ -15,9 +15,9 @@ namespace IntegrationTests
     public class EmployeeRepositoryTests
     {
         /// <summary>
-        /// The repository of Employees
+        /// The employeeRepository of Employees
         /// </summary>
-        private IRepository<Employee> repository;
+        private IRepository<Employee> employeeRepository;
 
         /// <summary>
         /// Tests the initialization.
@@ -33,10 +33,10 @@ namespace IntegrationTests
         [TestCleanup]
         public void TestClean()
         {
-            if (repository != null)
-                repository.Dispose();
+//            if (employeeRepository != null)
+//                employeeRepository.Dispose();
 
-            repository = null;
+            employeeRepository = null;
         }
 
         /// <summary>
@@ -88,9 +88,11 @@ namespace IntegrationTests
         {
             Employee employee;
 
-            using (repository = new EmployeesRepository())
+
+            using (var dbContext = new DatabaseContext())
             {
-                employee = repository.FindAll().FirstOrDefault();
+                employeeRepository = new EmployeesRepository(dbContext);
+                employee = employeeRepository.FindAll().FirstOrDefault();
             }
 
             Assert.IsNotNull(employee);
@@ -103,8 +105,9 @@ namespace IntegrationTests
         {
             IList<Employee> employee;
 
-            using (var repository = new EmployeesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                var repository = new EmployeesRepository(dbContext);
                 var ids = new int[5] { 1, 2, 3, 4, 5 };
                 employee = repository.GetByIdList(ids);
             }
@@ -120,8 +123,10 @@ namespace IntegrationTests
             IList<Employee> employee;
             string lastNameFilter = "Aleksandr";
 
-            using (var repository = new EmployeesRepository())
+
+            using (var dbContext = new DatabaseContext())
             {
+                var repository = new EmployeesRepository(dbContext);
                 employee = repository.FindByLastName(lastNameFilter);
             }
             
@@ -133,9 +138,10 @@ namespace IntegrationTests
         [Description("Repository don't save employees in database")]
         public void Save_noParams_exception()
         {
-            using (repository = new EmployeesRepository())
+            using (var dbContext = new DatabaseContext())
             {
-                repository.Save(new Employee("", "", ""));
+                employeeRepository = new EmployeesRepository(dbContext);
+                employeeRepository.Save(new Employee("", "", ""));
             }
         }
     }

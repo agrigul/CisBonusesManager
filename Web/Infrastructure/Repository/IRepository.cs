@@ -7,13 +7,30 @@ namespace Web.Infrastructure.Repository
     /// <summary>
     /// Interface for repository
     /// </summary>
-    public interface IRepository<T> : IDisposable where T : class
+    public interface IRepository<T>  where T : class
     {
         /// <summary>
         /// Finds all bonuses.
         /// </summary>
         /// <returns>IEnumerable{BonusAggregate}.</returns>
         IList<T> FindAll();
+
+        /// <summary>
+        /// Finds all using paging and sorting.
+        /// </summary>
+        /// <param name="skip">The skip parameter.</param>
+        /// <param name="take">The take parameter.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="filterField">The filter field.</param>
+        /// <param name="filterValue">The filter value.</param>
+        /// <returns>PagedResponse{`0}.</returns>
+        PagedResponse<T> FindAll(int skip, 
+                                    int take,
+                                    string sortField,
+                                    SortingDirection sortDirection,
+                                    string filterField,
+                                    string filterValue);
 
         /// <summary>
         /// Finds all items with paging.

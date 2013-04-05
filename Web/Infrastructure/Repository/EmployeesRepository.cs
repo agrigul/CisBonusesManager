@@ -28,20 +28,20 @@ namespace Web.Infrastructure.Repository
         /// </summary>
         public EmployeesRepository()
         {
-            dbContext = new DatabaseContext();
+            //dbContext = new DatabaseContext();
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing,
-        /// releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            if (dbContext == null) return;
-
-            dbContext.Dispose();
-            dbContext = null;
-        }
+//        /// <summary>
+//        /// Performs application-defined tasks associated with freeing,
+//        /// releasing, or resetting unmanaged resources.
+//        /// </summary>
+//        public void Dispose()
+//        {
+//            if (dbContext == null) return;
+//
+//            dbContext.Dispose();
+//            dbContext = null;
+//        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class.
@@ -67,6 +67,22 @@ namespace Web.Infrastructure.Repository
         }
 
         /// <summary>
+        /// Finds all.
+        /// </summary>
+        /// <param name="skip">The skip.</param>
+        /// <param name="take">The take.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="filterField">The filter field.</param>
+        /// <param name="filterValue">The filter value.</param>
+        /// <returns>PagedResponse{Employee}.</returns>
+        /// <exception cref="System.NotSupportedException">FindAll with filtering is not supported for Employees repository</exception>
+        public PagedResponse<Employee> FindAll(int skip, int take, string sortField, SortingDirection sortDirection, string filterField, string filterValue)
+        {
+            throw new NotSupportedException("FindAll with filtering is not supported for Employees repository");
+        }
+
+        /// <summary>
         /// Finds all with paging.
         /// </summary>
         /// <param name="skip">The skip.</param>
@@ -75,7 +91,7 @@ namespace Web.Infrastructure.Repository
         /// <exception cref="System.NotImplementedException"></exception>
         public PagedResponse<Employee> FindAllWithPaging(int skip, int take)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException("FindAllWithPaging is not supported for Employees repository");
         }
 
         /// <summary>

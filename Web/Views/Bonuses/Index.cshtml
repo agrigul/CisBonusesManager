@@ -73,7 +73,7 @@
                         .kendoComboBox({     
                             filter: "contains",
                             // sets the local variables to update values of current row.
-                            change: function(e) {
+                            change: function() {
 //                                        if(this.text() !== this.value())
 //                                            setNewValueEmployeeIdAndLastName(this.value(),this.text());
                                         setNewEmployeeIdAndLastName(this.value(),this.text()); 
@@ -117,6 +117,7 @@
                 pageSize: 3,
                 serverPaging: true,
                 serverSorting: true,
+                serverFiltering : true,
                 schema: {
                     data: "Data", // PagedResponse.Data
                     total : "TotalCount", // PagedResponse.TotalCount
@@ -148,9 +149,17 @@
             // creates bonuses grid control
             $("#bonusesGrid").kendoGrid({
                 dataSource:  bonusesDataSource,
-                pageable: true,
                 toolbar: ["create"],
                 editable: "inline",
+                pageable: true,
+               filterable: {
+                            extra: false,
+                            operators: {
+                                string: {
+                                    contains: "Contains"
+                                }
+                            }
+                        },
                 sortable: {
                             mode: "single",
                             allowUnsort: false
@@ -159,6 +168,7 @@
                     {
                         field: "BonusId",
                         hidden: true
+                        
                     },
                     {
                         field: "EmployeeId",
@@ -166,27 +176,72 @@
                     },
                     {   field: "EmployeeLastName",
                         title: "Employee",
+                        filterable: true,
                         editor: employeeAutocompletingEditor,
                         template: "#=EmployeeLastName#"
                     },
-                    "Amount",
+                    { 
+                        field: "Amount",
+                        title: "Amount",
+                        filterable: {
+                            operators: {
+                              number: {
+                                eq: "Is eqaul to",
+                              }
+                            }
+                          }
+                    },
                     {
                         field: "Date",
                         width:  95,
+                        filterable: {
+                            operators: {
+                              date: {
+                                eq: "Is eqaul to",
+                              }
+                            }
+                          },
                         template: '#= kendo.toString(Date,"MM/dd/yyyy") #' 
                     },
-                    "Comment",
+                    
+                    {
+                        field: "Comment",
+                        titel: "Comment",
+                        filterable: {
+                            operators: {
+                              number: {
+                                contains: "Contains"
+                              }
+                            }
+                          }
+                    },
                     {
                         field: "IsActive",
                         width:  70,
+                        filterable: true,
                         title: "Active"
+                        
                     }, {
                         field: "Ulc",
                         width:  95,
-                        title: "ULC"
+                        title: "ULC",
+                        filterable: {
+                            operators: {
+                              string: {
+                                contains: "Contains"
+                              }
+                            }
+                          }
                     }, {
                         field: "Dlc",
                         title: "DLC",
+                        filterable: {
+                            operators: {
+                              date: {
+                                eq: "Is eqaul to",
+                              }
+                            }
+                          },
                         width:  95,
                         template: '#= kendo.toString(Dlc,"MM/dd/yyyy") #' 
                     },

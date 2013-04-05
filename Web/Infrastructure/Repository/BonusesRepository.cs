@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Objects;
+using System.Globalization;
 using System.Linq;
 using Web.Models;
 using Web.Models.Bonuses;
@@ -33,20 +35,20 @@ namespace Web.Infrastructure.Repository
         /// </summary>
         public BonusesRepository()
         {
-            dbContext = new DatabaseContext();
+            //dbContext = new DatabaseContext();
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing,
-        /// releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            if (dbContext == null) return;
-
-            dbContext.Dispose();
-            dbContext = null;
-        }
+//        /// <summary>
+//        /// Performs application-defined tasks associated with freeing,
+//        /// releasing, or resetting unmanaged resources.
+//        /// </summary>
+//        public void Dispose()
+//        {
+//            if (dbContext == null) return;
+//
+//            dbContext.Dispose();
+//            dbContext = null;
+//        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class.
@@ -68,6 +70,7 @@ namespace Web.Infrastructure.Repository
         public IList<BonusAggregate> FindAll()
         {
             return DbSet.Include(b => b.Employee)
+                        .OrderByDescending(x => x.BonusId)
                         .ToList();
         }
 
@@ -79,7 +82,7 @@ namespace Web.Infrastructure.Repository
         /// <returns>PagedResponse{BonusAggregate}.</returns>
         public PagedResponse<BonusAggregate> FindAllWithPaging(int skip, int take)
         {
-            List<BonusAggregate> result= DbSet.Include(b => b.Employee)
+            List<BonusAggregate> result = DbSet.Include(b => b.Employee)
                                                .OrderByDescending(x => x.BonusId)
                                                .Skip(skip)
                                                .Take(take)
@@ -98,17 +101,82 @@ namespace Web.Infrastructure.Repository
         /// <param name="take">The take.</param>
         /// <param name="sortField">The sort field.</param>
         /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="filterField">The filter field.</param>
+        /// <param name="filterValue">The filter value.</param>
         /// <returns>PagedResponse{BonusAggregate}.</returns>
-        public PagedResponse<BonusAggregate> FindAllWithPagingAndSorting(int skip, int take, string sortField, SortingDirection sortDirection)
+        public PagedResponse<BonusAggregate> FindAll(int skip, int take,
+            string sortField,
+            SortingDirection sortDirection,
+            string filterField,
+            string filterValue)
         {
             IQueryable<BonusAggregate> query = DbSet.Include(b => b.Employee);
+            query = SetFiltering(filterField, filterValue, query);
+
+            int numberOfItemsInDb = query.Count();
+
             query = SetSorting(sortField, sortDirection, query);
 
             List<BonusAggregate> result = (query.Skip(skip)
                           .Take(take)).ToList();
 
-            int numberOfItemsInDb = DbSet.Count();
-            return new PagedResponse<BonusAggregate>(result, numberOfItemsInDb); 
+            return new PagedResponse<BonusAggregate>(result, numberOfItemsInDb);
+        }
+
+        /// <summary>
+        /// Sets the filtering.
+        /// </summary>
+        /// <param name="filterField">The filter field.</param>
+        /// <param name="filterValue">The filter value.</param>
+        /// <param name="query">The query.</param>
+        /// <returns>IQueryable{BonusAggregate}.</returns>
+        private IQueryable<BonusAggregate> SetFiltering(string filterField, string filterValue, IQueryable<BonusAggregate> query)
+        {
+            //Thu Apr 04 2013 00:00:00 GMT+0300 (FLE Daylight Time)"
+            const string dateTimeFormat = "ddd MMM dd yyyy hh:mm:ss"; // string format from controll
+
+            switch (filterField)
+            {
+                case "EmployeeLastName":
+                    query = query.Where(x => x.Employee.LastName.Contains(filterValue));
+                    break;
+
+                case "Date":
+                    filterValue = filterValue.Remove(filterValue.IndexOf('G')).Trim();
+                    DateTime date = DateTime.ParseExact(filterValue, dateTimeFormat, CultureInfo.InvariantCulture);
+                    query = query.Where(x => (x.Date.Year == date.Year &&
+                                              x.Date.Month == date.Month &&
+                                              x.Date.Day == date.Day));
+                    break;
+
+                case "Amount":
+                    decimal amountValue = decimal.Parse(filterValue, CultureInfo.CreateSpecificCulture("en-GB"));
+                    query = query.Where(x => x.Amount == amountValue);
+                    break;
+
+                case "Comment":
+                    query = query.Where(x => x.Comment.Contains(filterValue));
+                    break;
+
+                case "IsActive":
+                    bool isActiveValue = bool.Parse(filterValue);
+                    query = query.Where(x => x.IsActive == isActiveValue);
+                    break;
+
+                case "Ulc":
+                    query = query.Where(x => x.Ulc.Contains(filterValue));
+                    break;
+
+                case "Dlc":
+                    filterValue = filterValue.Remove(filterValue.IndexOf('G')).Trim();
+                    DateTime dlc = DateTime.ParseExact(filterValue, dateTimeFormat, CultureInfo.InvariantCulture);
+                    query = query.Where(x => (x.Date.Year == dlc.Year &&
+                                              x.Date.Month == dlc.Month &&
+                                              x.Date.Day == dlc.Day));
+                    break;
+            }
+
+            return query;
         }
 
         /// <summary>
@@ -118,9 +186,9 @@ namespace Web.Infrastructure.Repository
         /// <param name="sortDirection">The sort direction.</param>
         /// <param name="query">The query.</param>
         /// <returns>IQueryable{BonusAggregate}.</returns>
-        private  IQueryable<BonusAggregate> SetSorting(string sortField, SortingDirection sortDirection, IQueryable<BonusAggregate> query)
+        private IQueryable<BonusAggregate> SetSorting(string sortField, SortingDirection sortDirection, IQueryable<BonusAggregate> query)
         {
-            
+
             switch (sortField)
             {
                 case "EmployeeLastName":
@@ -202,53 +270,34 @@ namespace Web.Infrastructure.Repository
             if (!items.Any())
                 throw new ArgumentOutOfRangeException("Save", "List of Bonuses can't be empty");
 
-            try
+
+            var employeesRepository = new EmployeesRepository(dbContext);
+
+            //context doesn't want to save correctly without previous request
+            List<int> employees = (from b in items
+                                   select b.EmployeeId).ToList();
+            IList<Employee> attachedEmployees = employeesRepository.GetByIdList(employees);
+
+            foreach (BonusAggregate bonus in items)
             {
-                var employeesRepository = new EmployeesRepository(dbContext);
+                bonus.Employee = (from e in attachedEmployees
+                                  where bonus.EmployeeId == e.EmployeeId
+                                  select e).First();
 
-                //context doesn't want to save correctly without previous request
-                List<int> employees = (from b in items
-                                       select b.EmployeeId).ToList();
-                IList<Employee> attachedEmployees = employeesRepository.GetByIdList(employees);
+                if ((dbContext.Entry(bonus).State == EntityState.Detached) &&
+                     bonus.BonusId == 0)
+                    DbSet.Add(bonus); // Create
 
-                foreach (BonusAggregate bonus in items)
+                if ((dbContext.Entry(bonus).State == EntityState.Detached) &&
+                     bonus.BonusId != 0)
                 {
-                    bonus.Employee = (from e in attachedEmployees
-                                      where bonus.EmployeeId == e.EmployeeId
-                                      select e).First();
-
-                    if ((dbContext.Entry(bonus).State == EntityState.Detached) &&
-                         bonus.BonusId == 0)
-                        DbSet.Add(bonus); // Create
-
-                    if ((dbContext.Entry(bonus).State == EntityState.Detached) &&
-                         bonus.BonusId != 0)
-                    {
-                        (dbContext.Entry(bonus)).State = EntityState.Modified;
-                        DbSet.Attach(bonus); // Update
-                    }
+                    (dbContext.Entry(bonus)).State = EntityState.Modified;
+                    DbSet.Attach(bonus); // Update
                 }
-
-                //                   var currentEmployee= dbContext.Employees.Find(bonus.Employee.EmployeeId); // doesn't make a request to db
-                //                   dbContext.Entry(currentEmployee).State = EntityState.Unchanged;
-                //                   dbContext.Entry(currentEmployee).CurrentValues.SetValues(bonus.Employee);
-                //                    dbContext.Bonuses.Attach(bonus);
-                //                    dbContext.Entry(bonus).State = EntityState.Modified;
-
-                // DbSet.Add(bonus);
-
-                dbContext.SaveChanges();
             }
-            catch (DbUpdateException e)
-            {
-#if DEBUG
-                System.Diagnostics.Debug.WriteLine("---EXCEPTION: " + e.InnerException.Message);
 
-                if (e.InnerException.InnerException != null)
-                    System.Diagnostics.Debug.WriteLine("---INNER: " + e.InnerException.InnerException.Message);
-#endif
-                throw;
-            }
+            dbContext.SaveChanges();
+
         }
 
     }

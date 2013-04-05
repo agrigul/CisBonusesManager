@@ -39,8 +39,9 @@ namespace Web.Models.Bonuses
                 throw new ArgumentNullException("Create", "Can't create new BonusAggregate from null Dto object");
 
             Employee employee;
-            using (var repository = new EmployeesRepository())
+            using (var dbContext = new DatabaseContext())
             {
+                var repository = new EmployeesRepository(dbContext);
                 employee = repository.GetById(bonusDto.EmployeeId);
             }
 
