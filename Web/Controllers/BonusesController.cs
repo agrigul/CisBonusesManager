@@ -53,7 +53,25 @@ namespace Web.Controllers
         /// <returns>JsonResult of bonuses</returns>
         public JsonResult GetPagedJsonBonuses(int take, int skip)
         {
-            PagedResponse<BonusAggregate> bonuses = BonusesRepository.FindAllWithPaging(skip, take);
+            string sortingField = Request.Params["sort[0][field]"];
+            string sortDirection = Request.Params["sort[0][dir]"];
+
+            PagedResponse<BonusAggregate> bonuses;
+            SortingDirection direction;
+
+            if(String.IsNullOrEmpty(sortDirection))
+            {
+                direction = SortingDirection.Desc;
+            }
+            else
+            {
+                direction = sortDirection == "asc" ? SortingDirection.Asc : SortingDirection.Desc;
+            }
+
+            using (var bonusesRepository = new BonusesRepository())
+            {
+                bonuses = bonusesRepository.FindAllWithPagingAndSorting(skip, take, sortingField, direction);
+            }
             return Json(bonuses, JsonRequestBehavior.AllowGet);
         }
 

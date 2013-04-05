@@ -80,7 +80,7 @@ namespace Web.Infrastructure.Repository
         public PagedResponse<BonusAggregate> FindAllWithPaging(int skip, int take)
         {
             List<BonusAggregate> result= DbSet.Include(b => b.Employee)
-                                               .OrderByDescending(x => x.Date)
+                                               .OrderByDescending(x => x.BonusId)
                                                .Skip(skip)
                                                .Take(take)
                                                .ToList();
@@ -88,6 +88,81 @@ namespace Web.Infrastructure.Repository
             int numberOfItemsInDb = DbSet.Count();
             return new PagedResponse<BonusAggregate>(result, numberOfItemsInDb);
 
+        }
+
+
+        /// <summary>
+        /// Finds all with paging with sorting.
+        /// </summary>
+        /// <param name="skip">The skip.</param>
+        /// <param name="take">The take.</param>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <returns>PagedResponse{BonusAggregate}.</returns>
+        public PagedResponse<BonusAggregate> FindAllWithPagingAndSorting(int skip, int take, string sortField, SortingDirection sortDirection)
+        {
+            IQueryable<BonusAggregate> query = DbSet.Include(b => b.Employee);
+            query = SetSorting(sortField, sortDirection, query);
+
+            List<BonusAggregate> result = (query.Skip(skip)
+                          .Take(take)).ToList();
+
+            int numberOfItemsInDb = DbSet.Count();
+            return new PagedResponse<BonusAggregate>(result, numberOfItemsInDb); 
+        }
+
+        /// <summary>
+        /// Sets the sorting settings.
+        /// </summary>
+        /// <param name="sortField">The sort field.</param>
+        /// <param name="sortDirection">The sort direction.</param>
+        /// <param name="query">The query.</param>
+        /// <returns>IQueryable{BonusAggregate}.</returns>
+        private  IQueryable<BonusAggregate> SetSorting(string sortField, SortingDirection sortDirection, IQueryable<BonusAggregate> query)
+        {
+            
+            switch (sortField)
+            {
+                case "EmployeeLastName":
+                    query = sortDirection == SortingDirection.Asc
+                                ? query.OrderBy(x => x.Employee.LastName)
+                                : query.OrderByDescending(x => x.Employee.LastName);
+                    break;
+                case "Date":
+                    query = sortDirection == SortingDirection.Asc
+                                ? query.OrderBy(x => x.Date)
+                                : query.OrderByDescending(x => x.Date);
+                    break;
+                case "Amount":
+                    query = sortDirection == SortingDirection.Asc
+                                ? query.OrderBy(x => x.Amount)
+                                : query.OrderByDescending(x => x.Amount);
+                    break;
+                case "Comment":
+                    query = sortDirection == SortingDirection.Asc
+                                ? query.OrderBy(x => x.Comment)
+                                : query.OrderByDescending(x => x.Comment);
+                    break;
+                case "IsActive":
+                    query = sortDirection == SortingDirection.Asc
+                                ? query.OrderBy(x => x.IsActive)
+                                : query.OrderByDescending(x => x.IsActive);
+                    break;
+                case "Ulc":
+                    query = sortDirection == SortingDirection.Asc
+                                ? query.OrderBy(x => x.Ulc)
+                                : query.OrderByDescending(x => x.Ulc);
+                    break;
+                case "Dlc":
+                    query = sortDirection == SortingDirection.Asc
+                                ? query.OrderBy(x => x.Dlc)
+                                : query.OrderByDescending(x => x.Dlc);
+                    break;
+                default:
+                    query = query.OrderByDescending(x => x.BonusId);
+                    break;
+            }
+            return query;
         }
 
         /// <summary>

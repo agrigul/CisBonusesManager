@@ -14,7 +14,7 @@ namespace Web.Models.Bonuses
         /// Gets or sets the name of the employee.
         /// </summary>
         /// <value>The name of the employee.</value>
-        public string EmployeeName { get; set; }
+        public string EmployeeLastName { get; set; }
 
         /// <summary>
         /// This key is used as foreign key for mapping instead of Employee.EmployeeId

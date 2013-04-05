@@ -5,17 +5,11 @@
 }
 <h2>
     Bonuses</h2>
-<p>
-    @Html.ActionLink("Create New Bonus", "Create")
-</p>
+
 <div>
     <div id="bonusesGrid">
     </div>
-    <div id="employee-view">
-        <input id="employee" />
-    </div>
-</div>
-<script type="text/javascript" language="javascript">
+    <script type="text/javascript" language="javascript">
         $(document).ready(function () {
         
 //            $.ajax({
@@ -31,50 +25,63 @@
             //NOTE:
             // this a hack. I didn't find the answer  how to bind employee's
             // id and name from combobox.EmployeeId to selected row's model.EmployeeId
-            var newEmployeeId;
-            var newEmployeeName;
-            function setNewEmployeeIdAndName(id, name) {
-                newEmployeeId = id;
-                newEmployeeName = name;
+            var newValueEmployeeId;
+            var newValueEmployeeLastName;
+            
+            // Sets the employee's Id and last name which was selected using 
+            // autocomplete combobox during edit current bonus or creation of new one.
+            function setNewValueEmployeeIdAndLastName(id, lastName) {
+                if(id !== undefined && lastName !== undefined) {
+                    newValueEmployeeId = id;
+                    newValueEmployeeLastName = lastName;
+                }
             }
             
-
+            var currentValueEmployeeId;
+            var currentValueEmployeeLastName;
+            
+            function setCurrentValueEmployeeIdAndLastName(id, lastName) {
+                if(id !== undefined)
+                currentValueEmployeeId = id;
+                
+                if(lastName !== undefined)
+                currentValueEmployeeLastName = lastName;
+            }
+            
+            // datasource for autocomlete combobox to lookup employees names from
            var employeesDataSource = new kendo.data.DataSource({
                 type: "json",
                 serverFiltering : true,
                 transport: {
                     read: "@Url.Action("GetJsonEmployeesByLastName", "Bonuses")", 
                 },
+                // set's the local document variables with  employee's id and last name
+                // selected by an autocomplete control values.
                 parameterMap: function (options, operation) {
                         if (operation === "update" || operation === "create") {
-                            setNewEmployeeIdAndName(options.Id, options.LastName);
+                            setNewValueEmployeeIdAndLastName(options.Id, options.LastName);
                         }
                         return options;
-                    },
-
-                schema : {
-                    model:{id : "EmployeeId",
-                           fields: {
-                                LastName: {type : "string", 
-                                    editable: true, 
-                                    nullable: false, 
-                                    validation: { required: {message: "Employee's last name is required"}}
-                                }} 
                     }
-                }
             });
+            
+            // sets custom editor (autocomplete) for bonuses grid's filed "LastName"
             //$('<input required data-text-field="LastName" data-value-field="EmployeeId" data-bind="value:' + options.field + '"/>')
-            function employeeComboboxEditor(container, options) {
-                    $('<input data-bind="value:' + options.field + '"/>')
+            function employeeAutocompletingEditor(container, options) {
+                    $('<input required data-text-field="LastName" data-value-field="EmployeeId" data-bind="value:' + options.field + '"/>')
                         .appendTo(container)
                         .kendoComboBox({     
-                            dataTextField: "LastName",
-                            dataValueField: "EmployeeId",
                             filter: "contains",
+                            // sets the local variables to update values of current row.
                             change: function(e) {
-                                        if(this.value() !== undefined && this.text() !== undefined)
-                                        setNewEmployeeIdAndName(this.value(),this.text()); // set's the local variables to update values of current row.
+//                                        if(this.text() !== this.value())
+//                                            setNewValueEmployeeIdAndLastName(this.value(),this.text());
+                                        setNewEmployeeIdAndLastName(this.value(),this.text()); 
                                     },
+//                            dataBinding: function (e) {
+//                                if(currentValueEmployeeLastName !== undefined)
+//                                    this.value(currentValueEmployeeLastName);
+//                            },
                             dataSource: employeesDataSource
                         });
                 }
@@ -99,14 +106,17 @@
                             // correct format for conversion 
                             options.Date = kendo.toString(d, "MM/dd/yyyy");
 
-                            options.EmployeeId = newEmployeeId;
+                            // updates the BonusDTO.EmployeeId with selected value
+                            if(newValueEmployeeId !== undefined)
+                                options.EmployeeId = newValueEmployeeId;
                             
                         }
                         return options;
                     }
                 },
-                pageSize: 15,
+                pageSize: 3,
                 serverPaging: true,
+                serverSorting: true,
                 schema: {
                     data: "Data", // PagedResponse.Data
                     total : "TotalCount", // PagedResponse.TotalCount
@@ -115,13 +125,18 @@
                             EmployeeId : {type: "number"},
                             EmployeeLastName: {type : "string", 
                                 editable: true, 
-                                nullable: false, 
-                                validation: { required: {message: "Employee's last name is required"}}
+                                //validation: { required: {message: "Employee's last name is required"}}
                             },
-                            Date : {type:"date", editable: true, nullable:false,validation: { required: true}},
-                            Amount: {type: "number", editable: true, nullable:false,validation: { required: true}},
-                            Comment: {type : "string", editable: true, nullable: false, validation: { required: true}},
-                            isAcrive : {type: "boolean", editable: true},
+                            Date : {type:"date", editable: true, nullable:false,
+                                validation: {
+                                    required: {message: "Date is required to be set"}
+                                }},
+                            Amount: {type: "number", editable: true, nullable:false,
+                                validation: {
+                                     required: {message: "Amount is required to be set"}
+                            }},
+                            Comment: {type : "string", editable: true},
+                            IsActive : {type: "boolean", editable: true},
                             Ulc : {type : "string", editable: false},
                             Dlc : {type : "date", editable:false}
                             
@@ -130,12 +145,16 @@
                 }// schema 
             }); 
 
-            // creates grid control
+            // creates bonuses grid control
             $("#bonusesGrid").kendoGrid({
                 dataSource:  bonusesDataSource,
                 pageable: true,
                 toolbar: ["create"],
                 editable: "inline",
+                sortable: {
+                            mode: "single",
+                            allowUnsort: false
+                        },
                 columns: [
                     {
                         field: "BonusId",
@@ -147,45 +166,49 @@
                     },
                     {   field: "EmployeeLastName",
                         title: "Employee",
-                        editor: employeeComboboxEditor,
+                        editor: employeeAutocompletingEditor,
                         template: "#=EmployeeLastName#"
                     },
                     "Amount",
                     {
                         field: "Date",
+                        width:  95,
                         template: '#= kendo.toString(Date,"MM/dd/yyyy") #' 
                     },
                     "Comment",
                     {
-                        field: "isActive",
+                        field: "IsActive",
+                        width:  70,
                         title: "Active"
                     }, {
                         field: "Ulc",
+                        width:  95,
                         title: "ULC"
                     }, {
                         field: "Dlc",
                         title: "DLC",
+                        width:  95,
                         template: '#= kendo.toString(Dlc,"MM/dd/yyyy") #' 
                     },
-                    { command: ["edit"], title: " " }
+                    { command: ["edit"],
+                        width: 105,
+                        title: " " }
                 ],
                 save: function (e) {
-                    if(newEmployeeId !== undefined && newEmployeeName!== undefined) {
-                        e.model.EmployeeId = newEmployeeId; // it's a hack to bind model and combobox
-                        e.model.EmployeeLastName = newEmployeeName;
+                    if (newValueEmployeeId !== undefined && newValueEmployeeLastName !== undefined) {
+                        e.model.EmployeeId = newValueEmployeeId; // it's a hack to bind model and autocomplete control
+                        e.model.EmployeeLastName = newValueEmployeeLastName;
                     }
+                },
+                edit: function(e) {
+                    setCurrentValueEmployeeIdAndLastName(e.model.EmployeeId, e.model.EmployeeLastName);
+                },
+                 cancel: function (e) {
+                     setCurrentValueEmployeeIdAndLastName(e.model.EmployeeId, e.model.EmployeeLastName);
                 }
             });
             
-
-
-
-           
-
- 
-
-
             
         }); // end of ready function
-</script>
-</div> 
+    </script>
+</div>
