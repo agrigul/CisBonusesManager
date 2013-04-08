@@ -20,6 +20,20 @@
 //                  testdata = json;
 //              }
 //            });
+
+//                    var errorMesage = e.xhr.responseText.match(/<title>.*<\/title>/);
+//                    errorMesage = errorMesage.replace(/<(.|\n)*?>/g, "");
+            
+            function showErrorMessage(e) {
+                    var errorMesage = e.xhr.responseText.replace(/(\\[a-z])+/," ");// removes tags \r \n
+                     errorMesage = errorMesage.replace(/[\s]{2,}/," "); // removes spaces
+                
+                    if(errorMesage === undefined || errorMesage === -1 || errorMesage === "")
+                        alert("Bad errer response");
+                    else {
+                        alert(errorMesage);
+                    }
+             }
             
                 
             //NOTE:
@@ -62,7 +76,8 @@
                             setNewValueEmployeeIdAndLastName(options.Id, options.LastName);
                         }
                         return options;
-                    }
+                    },
+                error: showErrorMessage
             });
             
             // sets custom editor (autocomplete) for bonuses grid's filed "LastName"
@@ -72,6 +87,7 @@
                         .appendTo(container)
                         .kendoComboBox({     
                             filter: "contains",
+                             minLength: 3,
                             // sets the local variables to update values of current row.
                             change: function() {
 //                                        if(this.text() !== this.value())
@@ -118,6 +134,7 @@
                 serverPaging: true,
                 serverSorting: true,
                 serverFiltering : true,
+                error: showErrorMessage,
                 schema: {
                     data: "Data", // PagedResponse.Data
                     total : "TotalCount", // PagedResponse.TotalCount
@@ -152,7 +169,7 @@
                 toolbar: ["create"],
                 editable: "inline",
                 pageable: true,
-               filterable: {
+                filterable: {
                             extra: false,
                             operators: {
                                 string: {
