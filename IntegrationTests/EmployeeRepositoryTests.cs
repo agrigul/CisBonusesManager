@@ -15,6 +15,16 @@ namespace IntegrationTests
     public class EmployeeRepositoryTests
     {
         /// <summary>
+        /// The test user
+        /// </summary>
+        private string testUser = "ryakh";
+
+        /// <summary>
+        /// The test pass
+        /// </summary>
+        private string testPass = "1";
+
+        /// <summary>
         /// The employeeRepository of Employees
         /// </summary>
         private IRepository<Employee> employeeRepository;
@@ -89,7 +99,7 @@ namespace IntegrationTests
             Employee employee;
 
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 employeeRepository = new EmployeesRepository(dbContext);
                 employee = employeeRepository.FindAll().FirstOrDefault();
@@ -105,7 +115,7 @@ namespace IntegrationTests
         {
             IList<Employee> employee;
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 var repository = new EmployeesRepository(dbContext);
                 var ids = new int[5] { 1, 2, 3, 4, 5 };
@@ -124,7 +134,7 @@ namespace IntegrationTests
             string lastNameFilter = "Aleksandr";
 
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 var repository = new EmployeesRepository(dbContext);
                 employee = repository.FindByLastName(lastNameFilter);
@@ -135,10 +145,10 @@ namespace IntegrationTests
 
         [TestMethod]
         [ExpectedException(typeof(NotSupportedException))]
-        [Description("Repository don't save employees in database")]
+        [Description("Repository don not save employees in database")]
         public void Save_noParams_exception()
         {
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 employeeRepository = new EmployeesRepository(dbContext);
                 employeeRepository.Save(new Employee("", "", ""));

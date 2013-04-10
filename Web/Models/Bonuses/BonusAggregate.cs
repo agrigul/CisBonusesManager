@@ -33,7 +33,7 @@ namespace Web.Models.Bonuses
             get { return employee; }
             set{
                 if(value == null)
-                    throw new ArgumentNullException("Employee", "Employee can't be null");
+                    throw new ArgumentNullException("Employee", "Employee can not be null");
 
                 employee = value;
                 EmployeeId = value.EmployeeId;
@@ -138,7 +138,7 @@ namespace Web.Models.Bonuses
                                 int bonusId)
         {
             if (employee == null)
-                throw new ArgumentNullException("Bonus", "Employee can't be null to create bonus instance");
+                throw new ArgumentNullException("Bonus", "Employee can not be null to create bonus instance");
             Employee = employee;
             
             SetBonusProperties(date, amount, comment, isActive, bonusId);
@@ -153,7 +153,7 @@ namespace Web.Models.Bonuses
         /// <param name="comment">The comment.</param>
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
         /// <param name="bonusId">The bonus id.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">Bonus;Employee's id can't be zero or negative to create bonus instance</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Bonus;Employee's id can not be zero or negative to create bonus instance</exception>
         internal BonusAggregate(int employeeId,
                                 DateTime date,
                                 decimal amount,
@@ -162,7 +162,7 @@ namespace Web.Models.Bonuses
                                 int bonusId)
         {
             if (employeeId <= 0)
-                throw new ArgumentOutOfRangeException("Bonus", "Employee's id can't be zero or negative to create bonus instance");
+                throw new ArgumentOutOfRangeException("Bonus", "Employee's id can not be zero or negative to create bonus instance");
             
             EmployeeId = employeeId;
 

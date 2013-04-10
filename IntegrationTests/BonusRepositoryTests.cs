@@ -15,6 +15,16 @@ namespace IntegrationTests
     public class BonusRepositoryTests
     {
         /// <summary>
+        /// The test user
+        /// </summary>
+        private string testUser = "ryakh";
+
+        /// <summary>
+        /// The test pass
+        /// </summary>
+        private string testPass = "1";
+
+        /// <summary>
         /// The bonusRepository of bonuses
         /// </summary>
         private IRepository<BonusAggregate> bonusRepository;
@@ -43,10 +53,10 @@ namespace IntegrationTests
         [TestCleanup]
         public void TestClean()
         {
-//            if (bonusRepository != null)
-//                bonusRepository.Dispose();
-//            if (employeeRepository != null)
-//                employeeRepository.Dispose();
+            //            if (bonusRepository != null)
+            //                bonusRepository.Dispose();
+            //            if (employeeRepository != null)
+            //                employeeRepository.Dispose();
 
             bonusRepository = null;
             employeeRepository = null;
@@ -98,7 +108,7 @@ namespace IntegrationTests
         {
             IList<BonusAggregate> bonuses;
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 bonuses = bonusRepository.FindAll();
@@ -114,7 +124,7 @@ namespace IntegrationTests
         {
             BonusAggregate bonusAggregate;
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 bonusAggregate = bonusRepository.FindAll().First();
@@ -129,7 +139,7 @@ namespace IntegrationTests
         {
             BonusAggregate bonusAggregate;
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 bonusAggregate = bonusRepository.GetById(1);
@@ -146,7 +156,7 @@ namespace IntegrationTests
             IList<BonusAggregate> notSkipedBonuses;
             PagedResponse<BonusAggregate> skipedBonuses;
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 notSkipedBonuses = bonusRepository.FindAll();
@@ -162,7 +172,7 @@ namespace IntegrationTests
             IList<BonusAggregate> notSkipedBonuses;
             PagedResponse<BonusAggregate> skipedBonuses;
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 notSkipedBonuses = bonusRepository.FindAll();
@@ -180,7 +190,7 @@ namespace IntegrationTests
         [ExpectedException(typeof(ArgumentException))]
         public void FindAllWithPaging_NegativeSkip2Take3_3bonuses()
         {
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 bonusRepository.FindAllWithPaging(-2, 3);
@@ -201,7 +211,7 @@ namespace IntegrationTests
 
 
             int numberOfCurrentBonuses;
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 numberOfItemsBeforSave = bonusRepository.FindAll().Count();
@@ -221,7 +231,7 @@ namespace IntegrationTests
             var bonusesIds = new int[2];
 
             string newComment = "comment on " + DateTime.Now;
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 bonusesToUpdate = bonusRepository.FindAll().Take(2).ToList();
@@ -233,7 +243,7 @@ namespace IntegrationTests
                 bonusRepository.Save(bonusesToUpdate);
             }
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 bonusRepository = new BonusesRepository(dbContext);
                 updatedBonuses.Add(bonusRepository.GetById(bonusesIds[0]));
@@ -253,13 +263,37 @@ namespace IntegrationTests
         {
             Employee employee;
 
-            using (var dbContext = new DatabaseContext())
+            using (var dbContext = new DatabaseContext(testUser, testPass))
             {
                 employeeRepository = new EmployeesRepository(dbContext);
                 employee = employeeRepository.GetById(id);
             }
 
             return employee;
+        }
+
+        [TestMethod]
+        [Description("Each user uses DB account to get bonuses on runtime")]
+        public void ChangeCredentialsToDBonRuntime_twousers_bonusesFound()
+        {
+            int numberOfBonusesFirstUser;
+            int numberOfBonusesSecondUser;
+            using (var dbContext = new DatabaseContext("ryakh", "1"))
+            {
+                var repository = new BonusesRepository(dbContext);
+                numberOfBonusesFirstUser = repository.FindAll().Count();
+            }
+
+
+            using (var dbContext = new DatabaseContext("kmikula", "1"))
+            {
+                var repository = new BonusesRepository(dbContext);
+                numberOfBonusesSecondUser = repository.FindAll().Count();
+            }
+
+            Assert.IsTrue(numberOfBonusesFirstUser > 0);
+            Assert.IsTrue(numberOfBonusesSecondUser > 0);
+
         }
     }
 }

@@ -250,7 +250,7 @@ namespace Web.Infrastructure.Repository
         /// Saves the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <exception cref="System.ArgumentNullException">Save;BonusAggregate item shouldn't be null</exception>
+        /// <exception cref="System.ArgumentNullException">Save;BonusAggregate item shouldn not be null</exception>
         public void Save(BonusAggregate item)
         {
             Save(new List<BonusAggregate> { item });
@@ -260,20 +260,20 @@ namespace Web.Infrastructure.Repository
         /// Saves the specified items.
         /// </summary>
         /// <param name="items">The items.</param>
-        /// <exception cref="System.ArgumentNullException">Save;List of Bonuses shouldn't be null</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Save;List of Bonuses can't be empty</exception>
+        /// <exception cref="System.ArgumentNullException">Save;List of Bonuses shouldn not be null</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Save;List of Bonuses can not be empty</exception>
         public void Save(IEnumerable<BonusAggregate> items)
         {
             if (items == null)
-                throw new ArgumentNullException("Save", "List of Bonuses shouldn't be null");
+                throw new ArgumentNullException("Save", "List of Bonuses should not be null");
 
             if (!items.Any())
-                throw new ArgumentOutOfRangeException("Save", "List of Bonuses can't be empty");
+                throw new ArgumentOutOfRangeException("Save", "List of Bonuses can not be empty");
 
 
             var employeesRepository = new EmployeesRepository(dbContext);
 
-            //context doesn't want to save correctly without previous request
+            //context doesn not want to save correctly without previous request
             List<int> employees = (from b in items
                                    select b.EmployeeId).ToList();
             IList<Employee> attachedEmployees = employeesRepository.GetByIdList(employees);

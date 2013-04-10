@@ -13,7 +13,11 @@ namespace Web.Controllers
     /// </summary>
     public class BonusesController : Controller
     {
-        private const string ServerError = "Server error:";
+        /// <summary>
+        /// The server error message prefix
+        /// </summary>
+        private const string ServerErrorMsg = "Server error:";
+
         /// <summary>
         /// The repository of bonuses
         /// </summary>
@@ -43,6 +47,9 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
         {
+            var user = new UserCredentials("ryakh", "1");
+            SessionRepository.SetUserCredentials(user);
+
             return View();
         }
 
@@ -58,6 +65,8 @@ namespace Web.Controllers
             string sortDirection = String.Empty;
             string filterField = String.Empty;
             string filterValue = String.Empty;
+
+            
 
             PagedResponse<BonusAggregate> bonuses;
             try
@@ -89,7 +98,7 @@ namespace Web.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} database read bonuses failed: {1}", ServerError, ex.Message),
+                return Json(string.Format("{0} database read bonuses failed: {1}", ServerErrorMsg, ex.Message),
                             JsonRequestBehavior.AllowGet);
             }
 
@@ -119,7 +128,7 @@ namespace Web.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} Database read employees failed: {1}", ServerError, ex.Message), 
+                return Json(string.Format("{0} Database read employees failed: {1}", ServerErrorMsg, ex.Message), 
                             JsonRequestBehavior.AllowGet);
             }
             
@@ -155,9 +164,9 @@ namespace Web.Controllers
             }
             catch (Exception ex)
             {
-                //throw new Exception(string.Format("{0} the create bonus failed: {1}", ServerError, ex.Message));
+                //throw new Exception(string.Format("{0} the create bonus failed: {1}", ServerErrorMsg, ex.Message));
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return  Json(string.Format("{0} create bonus failed: {1}", ServerError, ex.Message));
+                return  Json(string.Format("{0} create bonus failed: {1}", ServerErrorMsg, ex.Message));
             }
 
             return Json(bonus);
@@ -208,7 +217,7 @@ namespace Web.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} database updated bonus failed: {1}", ServerError, ex.Message));
+                return Json(string.Format("{0} database updated bonus failed: {1}", ServerErrorMsg, ex.Message));
             }
 
             return Json(employee);

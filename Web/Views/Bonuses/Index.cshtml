@@ -11,15 +11,7 @@
     </div>
     <script type="text/javascript" language="javascript">
         $(document).ready(function () {
-        
-//            $.ajax({
-//              url: "@Url.Action("GetPagedJsonBonuses", "Bonuses")",
-//              async: false,
-//              dataType: 'json',
-//              success: function (json) {
-//                  testdata = json;
-//              }
-//            });
+
 
 //                    var errorMesage = e.xhr.responseText.match(/<title>.*<\/title>/);
 //                    errorMesage = errorMesage.replace(/<(.|\n)*?>/g, "");
@@ -29,7 +21,7 @@
                      errorMesage = errorMesage.replace(/[\s]{2,}/," "); // removes spaces
                 
                     if(errorMesage === undefined || errorMesage === -1 || errorMesage === "")
-                        alert("Bad errer response");
+                        alert("Bad errer response message");
                     else {
                         alert(errorMesage);
                     }
@@ -37,8 +29,9 @@
             
                 
             //NOTE:
-            // this a hack. I didn't find the answer  how to bind employee's
-            // id and name from combobox.EmployeeId to selected row's model.EmployeeId
+            // this is a hack. I didn't find the answer  how to bind employee's id
+            // and name from combobox.EmployeeId to selected row's model.EmployeeId
+            // I found that they all follow the same approach, or use hidden input element to store EmployeeId.
             var newValueEmployeeId;
             var newValueEmployeeLastName;
             
@@ -87,7 +80,7 @@
                         .appendTo(container)
                         .kendoComboBox({     
                             filter: "contains",
-                             minLength: 3,
+                             minLength: 2,
                             // sets the local variables to update values of current row.
                             change: function() {
 //                                        if(this.text() !== this.value())

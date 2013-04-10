@@ -122,15 +122,15 @@ namespace Web.Infrastructure.Repository
         /// Saves the specified items.
         /// </summary>
         /// <param name="items">The items.</param>
-        /// <exception cref="System.ArgumentNullException">Save;List of Employee shouldn't be null</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Save;List of Employee can't be empty</exception>
+        /// <exception cref="System.ArgumentNullException">Save;List of Employee shouldn not be null</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Save;List of Employee can not be empty</exception>
         public void Save(IEnumerable<Employee> items)
         {
             if (items == null)
-                throw new ArgumentNullException("Save", "List of Employee shouldn't be null");
+                throw new ArgumentNullException("Save", "List of Employee shouldn not be null");
 
             if (!items.Any())
-                throw new ArgumentOutOfRangeException("Save", "List of Employee can't be empty");
+                throw new ArgumentOutOfRangeException("Save", "List of Employee can not be empty");
 
             foreach (Employee employee in items)
             {
@@ -144,10 +144,10 @@ namespace Web.Infrastructure.Repository
         /// Saves the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <exception cref="System.ArgumentNullException">Save;Employee item shouldn't be null</exception>
+        /// <exception cref="System.ArgumentNullException">Save;Employee item shouldn not be null</exception>
         public void Save(Employee item)
         {
-            throw new NotSupportedException("Employee entities can't be saved");
+            throw new NotSupportedException("Employee entities can not be saved");
         }
 
         /// <summary>

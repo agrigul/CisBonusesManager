@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using Web.Infrastructure.Repository;
 
 namespace Web.Models.Bonuses
@@ -8,6 +9,9 @@ namespace Web.Models.Bonuses
     /// </summary>
     public class BonusFactory
     {
+        public string login = "ryakh";
+        public string password = "1"; 
+
         /// <summary>
         /// Creates the specified employee.
         /// </summary>
@@ -31,12 +35,14 @@ namespace Web.Models.Bonuses
         /// Creates the specified bonus aggregate from DTO object.
         /// </summary>
         /// <param name="bonusDto">The bonus DTO object.</param>
-        /// <returns>BonusAggregate.</returns>
-        /// <exception cref="System.ArgumentNullException">Create;Can't create new BonusAggregate from null Dto object</exception>
+        /// <returns>
+        /// BonusAggregate.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">Create;Can not create new BonusAggregate from null Dto object</exception>
         public BonusAggregate Create(BonusDto bonusDto)
         {
             if (bonusDto == null)
-                throw new ArgumentNullException("Create", "Can't create new BonusAggregate from null Dto object");
+                throw new ArgumentNullException("Create", "Can not create new BonusAggregate from null DTO object");
 
             Employee employee;
             using (var dbContext = new DatabaseContext())
@@ -44,7 +50,7 @@ namespace Web.Models.Bonuses
                 var repository = new EmployeesRepository(dbContext);
                 employee = repository.GetById(bonusDto.EmployeeId);
             }
-
+            
             return new BonusAggregate(employee, 
                                         bonusDto.Date, 
                                         bonusDto.Amount, 

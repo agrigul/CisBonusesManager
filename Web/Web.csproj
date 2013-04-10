@@ -170,6 +170,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Infrastructure\Repository\BonusesRepository.cs" />
     <Compile Include="Infrastructure\Repository\EmployeesRepository.cs" />
+    <Compile Include="Infrastructure\Repository\SessionRepository.cs" />
     <Compile Include="Models\Bonuses\BonusDto.cs" />
     <Compile Include="Models\Bonuses\BonusFactory.cs" />
     <Compile Include="Infrastructure\Repository\IRepository.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
     <Compile Include="Models\PagedResponse.cs" />
     <Compile Include="Models\SortingDirection.cs" />
+    <Compile Include="Models\UserCredentials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
