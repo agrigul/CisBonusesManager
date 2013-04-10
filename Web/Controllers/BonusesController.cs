@@ -19,7 +19,7 @@ namespace Web.Controllers
         /// <summary>
         /// The server error message prefix
         /// </summary>
-        private const string ServerErrorMsg = "Server error:";
+        private const string ServerErrorMsg = "Server error. ";
 
         /// <summary>
         /// The repository of bonuses
@@ -98,7 +98,7 @@ namespace Web.Controllers
             catch (Exception ex)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} database read bonuses failed: {1}", ServerErrorMsg, ex.Message),
+                return Json(string.Format("{0} Database read bonuses failed: {1}", ServerErrorMsg, ex.Message),
                             JsonRequestBehavior.AllowGet);
             }
 
@@ -147,10 +147,10 @@ namespace Web.Controllers
             try
             {
                 if (bonusDto.Amount <= 0)
-                    throw new ArgumentOutOfRangeException("amount should be more than 0");
+                    throw new ArgumentOutOfRangeException("Amount should be more than 0");
 
                 if(bonusDto.EmployeeId  <= 0)
-                    throw new ArgumentNullException("you should specify an existing employee");
+                    throw new ArgumentNullException("You should specify an existing employee");
 
                 using (var dbContext = new DatabaseContext())
                 {
@@ -166,7 +166,7 @@ namespace Web.Controllers
             {
                 //throw new Exception(string.Format("{0} the create bonus failed: {1}", ServerErrorMsg, ex.Message));
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return  Json(string.Format("{0} create bonus failed: {1}", ServerErrorMsg, ex.Message));
+                return  Json(string.Format("{0} Create bonus failed: {1}", ServerErrorMsg, ex.Message));
             }
 
             return Json(bonus);
