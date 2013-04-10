@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Web.Mvc;
+using Web.Filters;
 using Web.Models;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
@@ -11,6 +12,8 @@ namespace Web.Controllers
     /// <summary>
     /// Class BonusesController
     /// </summary>
+    [Authorize]
+    [InitializeSimpleMembership]
     public class BonusesController : Controller
     {
         /// <summary>
@@ -46,10 +49,7 @@ namespace Web.Controllers
         /// </summary>
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
-        {
-            var user = new UserCredentials("ryakh", "1");
-            SessionRepository.SetUserCredentials(user);
-
+        { 
             return View();
         }
 

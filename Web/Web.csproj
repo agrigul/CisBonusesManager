@@ -186,7 +186,6 @@
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
     <Compile Include="Models\PagedResponse.cs" />
     <Compile Include="Models\SortingDirection.cs" />
-    <Compile Include="Models\UserCredentials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

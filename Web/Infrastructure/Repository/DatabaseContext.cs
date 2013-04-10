@@ -35,8 +35,8 @@ namespace Web.Infrastructure.Repository
             : base(ConnectionStringName)
         {
             Database.SetInitializer<DatabaseContext>(null); // without creating new database
-            
-            var user = SessionRepository.CurrentSession.UserCredentials as UserCredentials;
+
+            var user = SessionRepository.CurrentSession.UserCredentials as LoginModel;
             //TODO: delete hardcode below
             if(user == null)
                 throw new ArgumentNullException("DatabaseContext", "UserCredentials object can not be null");
@@ -44,7 +44,7 @@ namespace Web.Infrastructure.Repository
             string connectionString = string.Format("{0} User ID={1};Password={2}",
                                                    System.Configuration.ConfigurationManager.
                                                      ConnectionStrings[ConnectionStringName].ConnectionString,
-                                                   user.Login,
+                                                   user.UserName,
                                                    user.Password
                                                    );
             this.Database.Connection.ConnectionString = connectionString;

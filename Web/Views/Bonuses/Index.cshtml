@@ -3,9 +3,8 @@
 @{
     ViewBag.Title = "Index";
 }
-<h2>
-    Bonuses</h2>
-
+<h2>Employees bonuses</h2>
+<br/>
 <div>
     <div id="bonusesGrid">
     </div>
@@ -21,7 +20,7 @@
                      errorMesage = errorMesage.replace(/[\s]{2,}/," "); // removes spaces
                 
                     if(errorMesage === undefined || errorMesage === -1 || errorMesage === "")
-                        alert("Bad errer response message");
+                        alert("Bad error response message");
                     else {
                         alert(errorMesage);
                     }
