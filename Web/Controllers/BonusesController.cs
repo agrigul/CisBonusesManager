@@ -191,7 +191,7 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="bonusDto">The bonus DTO object.</param>
         /// <returns>Http status code result..</returns>
-        [HttpPut]
+        [HttpPost]
         public JsonResult Edit(BonusDto bonusDto)
         {
             Employee employee = null;
