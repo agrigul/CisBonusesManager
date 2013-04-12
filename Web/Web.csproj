@@ -35,6 +35,18 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="BonusesDbContext-Deployment" Order="1">
+          <Destination Path="Data Source=cisdb2.cistest.local%3bInitial Catalog=RasTest%3bPersist Security Info=True%3b" />
+          <Object Type="dbFullSql" Enabled="False">
+            <PreSource Path="Data Source=cisdb2.cistest.local%3bInitial Catalog=RasTest%3bPersist Security Info=True" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Release\AutoScripts\BonusesDbContext-Deployment_SchemaOnly.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
+    <DeployIisAppPath>BonusesManager/Web_deploy</DeployIisAppPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -184,6 +196,7 @@
     <Compile Include="Models\Bonuses\Employee.cs" />
     <Compile Include="Infrastructure\Repository\DatabaseContext.cs" />
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
+    <Compile Include="Models\FilterBuilder.cs" />
     <Compile Include="Models\PagedResponse.cs" />
     <Compile Include="Models\SortingDirection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -807,15 +820,7 @@
     <Content Include="Images\orderedList8.png" />
     <Content Include="Images\orderedList9.png" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Account\_RemoveExternalLoginsPartial.cshtml" />
-    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Manage.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -832,12 +837,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Bonuses\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Bonuses\Create.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Bonuses\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Scripts\jquery-1.9.1.min.map" />

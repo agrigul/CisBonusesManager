@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 using System.Net;
 using System.Web.Mvc;
 using Web.Filters;
@@ -65,9 +67,8 @@ namespace Web.Controllers
             string sortDirection = String.Empty;
             string filterField = String.Empty;
             string filterValue = String.Empty;
-
             
-
+            
             PagedResponse<BonusAggregate> bonuses;
             try
             {
@@ -76,7 +77,8 @@ namespace Web.Controllers
                     sortingField = Request.Params["sort[0][field]"];
                     sortDirection = Request.Params["sort[0][dir]"];
                     filterField = Request.Params["filter[filters][0][field]"];
-                    filterValue = Request.Params["filter[filters][0][value]"];
+                    
+                    filterValue = FilterBuilder.FormFilterValue(Request.Params, filterField);
                 }
                 SortingDirection direction;
 
@@ -95,15 +97,24 @@ namespace Web.Controllers
                     bonuses = BonusesRepository.FindAll(skip, take, sortingField, direction, filterField, filterValue);
                 }
             }
-            catch (Exception ex)
+            catch(EntityException e)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} Database read bonuses failed: {1}", ServerErrorMsg, ex.Message),
+                return Json(string.Format("{0} {1}. Possible you have no permission to access", 
+                            ServerErrorMsg, e.Message),
+                            JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return Json(string.Format("{0} Database read bonuses failed: {1}", ServerErrorMsg, e.Message),
                             JsonRequestBehavior.AllowGet);
             }
 
             return Json(bonuses, JsonRequestBehavior.AllowGet);
         }
+
+     
 
         /// <summary>
         /// Gets the list of employees by last name.
@@ -112,7 +123,7 @@ namespace Web.Controllers
         public JsonResult GetJsonEmployeesByLastName()
         {
             IList<Employee> employees = new List<Employee>();
-            string lastName = Request.Params["filter[filters][0][value]"];
+            string lastName = FilterBuilder.FormFilterValue(Request.Params);
             
             try
             {
@@ -187,7 +198,7 @@ namespace Web.Controllers
             try
             {
                 if (bonusDto == null)
-                    throw new ArgumentNullException("bonusDto can\'t be null in controller Edit");
+                    throw new ArgumentNullException("bonusDto can not be null in controller Edit");
 
                 if (bonusDto.EmployeeId != 0)
                     using (var dbContext = new DatabaseContext())

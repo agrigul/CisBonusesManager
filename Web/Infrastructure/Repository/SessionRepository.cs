@@ -118,6 +118,7 @@ namespace Web.Infrastructure.Repository
         /// </summary>
         public static void ClearUser()
         {
+            if (CurrentSession != null)
             lock (syncObject)
             {
                 CurrentSession.UserCredentials = null;

@@ -3,276 +3,309 @@
 @{
     ViewBag.Title = "Index";
 }
-<h2>Employees bonuses</h2>
 <br/>
-<div>
-    <div id="bonusesGrid">
-    </div>
-    <script type="text/javascript" language="javascript">
-        $(document).ready(function () {
 
-
+@if (Request.IsAuthenticated)
+{
+    <div>
+        <div id="bonusesGrid"  style="width:1200px;">
+        </div>
+        <script type="text/javascript" language="javascript">
+            
+            $(document).ready(function() {
+            
 //                    var errorMesage = e.xhr.responseText.match(/<title>.*<\/title>/);
 //                    errorMesage = errorMesage.replace(/<(.|\n)*?>/g, "");
-            
-            function showErrorMessage(e) {
-                    var errorMesage = e.xhr.responseText.replace(/(\\[a-z])+/," ");// removes tags \r \n
-                     errorMesage = errorMesage.replace(/[\s]{2,}/," "); // removes spaces
-                
-                    if(errorMesage === undefined || errorMesage === -1 || errorMesage === "")
-                        alert("Bad error response message");
+
+                function showErrorMessage(e) {
+                    var errorMesage = e.xhr.responseText.replace(/(\\[a-z])+/, " "); // removes tags \r \n
+                    errorMesage = errorMesage.replace(/[\s]{2,}/, " "); // removes spaces
+
+                    if (errorMesage === undefined || errorMesage === -1 || errorMesage === "")
+                        alert("Bad or empty error response message");
                     else {
                         alert(errorMesage);
                     }
-             }
-            
-                
-            //NOTE:
-            // this is a hack. I didn't find the answer  how to bind employee's id
-            // and name from combobox.EmployeeId to selected row's model.EmployeeId
-            // I found that they all follow the same approach, or use hidden input element to store EmployeeId.
-            var newValueEmployeeId;
-            var newValueEmployeeLastName;
-            
-            // Sets the employee's Id and last name which was selected using 
-            // autocomplete combobox during edit current bonus or creation of new one.
-            function setNewValueEmployeeIdAndLastName(id, lastName) {
-                if(id !== undefined && lastName !== undefined) {
-                    newValueEmployeeId = id;
-                    newValueEmployeeLastName = lastName;
                 }
-            }
-            
-            var currentValueEmployeeId;
-            var currentValueEmployeeLastName;
-            
-            function setCurrentValueEmployeeIdAndLastName(id, lastName) {
-                if(id !== undefined)
-                currentValueEmployeeId = id;
-                
-                if(lastName !== undefined)
-                currentValueEmployeeLastName = lastName;
-            }
-            
-            // datasource for autocomlete combobox to lookup employees names from
-           var employeesDataSource = new kendo.data.DataSource({
-                type: "json",
-                serverFiltering : true,
-                transport: {
-                    read: "@Url.Action("GetJsonEmployeesByLastName", "Bonuses")", 
-                },
-                // set's the local document variables with  employee's id and last name
-                // selected by an autocomplete control values.
-                parameterMap: function (options, operation) {
+
+
+                //NOTE:
+                // this is a hack. I didn't find the answer  how to bind employee's id
+                // and name from combobox.EmployeeId to selected row's model.EmployeeId
+                // I found that they all follow the same approach, or use hidden input element to store EmployeeId.
+                var newValueEmployeeId;
+                var newValueEmployeeLastName;
+
+                // Sets the employee's Id and last name which was selected using 
+                // autocomplete combobox during edit current bonus or creation of new one.
+
+                function setNewValueEmployeeIdAndLastName(id, lastName) {
+                    if (id !== undefined && lastName !== undefined) {
+                        newValueEmployeeId = id;
+                        newValueEmployeeLastName = lastName;
+                    }
+                }
+
+                var currentValueEmployeeId;
+                var currentValueEmployeeLastName;
+
+                function setCurrentValueEmployeeIdAndLastName(id, lastName) {
+                    if (id !== undefined)
+                        currentValueEmployeeId = id;
+
+                    if (lastName !== undefined)
+                        currentValueEmployeeLastName = lastName;
+                }
+
+                // datasource for autocomlete combobox to lookup employees names from
+                var employeesDataSource = new kendo.data.DataSource({
+                    type: "json",
+                    serverFiltering: true,
+                    transport: {
+                        read: "@Url.Action("GetJsonEmployeesByLastName", "Bonuses")",
+                    },
+                    // set's the local document variables with  employee's id and last name
+                    // selected by an autocomplete control values.
+                    parameterMap: function(options, operation) {
                         if (operation === "update" || operation === "create") {
                             setNewValueEmployeeIdAndLastName(options.Id, options.LastName);
                         }
                         return options;
                     },
-                error: showErrorMessage
-            });
-            
-            // sets custom editor (autocomplete) for bonuses grid's filed "LastName"
-            //$('<input required data-text-field="LastName" data-value-field="EmployeeId" data-bind="value:' + options.field + '"/>')
-            function employeeAutocompletingEditor(container, options) {
+                    error: showErrorMessage
+                });
+
+                // sets custom editor (autocomplete) for bonuses grid's filed "LastName"
+                //$('<input required data-text-field="LastName" data-value-field="EmployeeId" data-bind="value:' + options.field + '"/>')
+
+                function employeeAutocompletingEditor(container, options) {
                     $('<input required data-text-field="LastName" data-value-field="EmployeeId" data-bind="value:' + options.field + '"/>')
                         .appendTo(container)
-                        .kendoComboBox({     
+                        .kendoComboBox({
                             filter: "contains",
-                             minLength: 2,
+                            autoBind: false,
+                            minLength: 2,
                             // sets the local variables to update values of current row.
                             change: function() {
 //                                        if(this.text() !== this.value())
 //                                            setNewValueEmployeeIdAndLastName(this.value(),this.text());
-                                        setNewEmployeeIdAndLastName(this.value(),this.text()); 
-                                    },
-//                            dataBinding: function (e) {
-//                                if(currentValueEmployeeLastName !== undefined)
-//                                    this.value(currentValueEmployeeLastName);
-//                            },
+                                setNewValueEmployeeIdAndLastName(this.value(), this.text());
+                            },
+                            dataBinding: function (e) {
+                                //if(currentValueEmployeeLastName !== undefined)
+                                //    this.value(currentValueEmployeeLastName);
+                                console.log("dataBinding: ", e, this.dataItem());
+                            },
+                            dataBound: function (e) {
+                                console.log("dataBound: ", e, this.dataItem());
+                            },
                             dataSource: employeesDataSource
                         });
                 }
-          
-            
-            // bind json result from /Bonuses/GetPagedJsonBonuses
-            var bonusesDataSource = new kendo.data.DataSource({
-                transport: {
-                    type: "json",
-                    read: "@Url.Action("GetPagedJsonBonuses", "Bonuses")",
-                    update: { 
-                                url: "@Url.Action("Edit", "Bonuses")",
-                                type: "PUT"
-                            },
-                    create: {
+
+
+                // bind json result from /Bonuses/GetPagedJsonBonuses
+                var bonusesDataSource = new kendo.data.DataSource({
+                    transport: {
+                        type: "json",
+                        read: "@Url.Action("GetPagedJsonBonuses", "Bonuses")",
+                        update: {
+                            url: "@Url.Action("Edit", "Bonuses")",
+                            type: "PUT"
+                        },
+                        create: {
                             url: "@Url.Action("Create", "Bonuses")",
                             type: "POST"
-                    },
-                    parameterMap: function (options, operation) {
-                        if (operation === "update" || operation === "create") {
-                            var d = new Date(options.Date);
-                            // correct format for conversion 
-                            options.Date = kendo.toString(d, "MM/dd/yyyy");
+                        },
+                        parameterMap: function(options, operation) {
+                            if (operation === "update" || operation === "create") {
+                                var d = new Date(options.Date);
+                                // correct format for conversion 
+                                options.Date = kendo.toString(d, "MM/dd/yyyy");
 
-                            // updates the BonusDTO.EmployeeId with selected value
-                            if(newValueEmployeeId !== undefined)
-                                options.EmployeeId = newValueEmployeeId;
-                            
+                                // updates the BonusDTO.EmployeeId with selected value
+                                if (newValueEmployeeId !== undefined)
+                                    options.EmployeeId = newValueEmployeeId;
+
+                            }
+                            return options;
                         }
-                        return options;
-                    }
-                },
-                pageSize: 3,
-                serverPaging: true,
-                serverSorting: true,
-                serverFiltering : true,
-                error: showErrorMessage,
-                schema: {
-                    data: "Data", // PagedResponse.Data
-                    total : "TotalCount", // PagedResponse.TotalCount
-                    model: {id: "BonusId",  // Data
-                        fields: {
-                            EmployeeId : {type: "number"},
-                            EmployeeLastName: {type : "string", 
-                                editable: true, 
-                                //validation: { required: {message: "Employee's last name is required"}}
-                            },
-                            Date : {type:"date", editable: true, nullable:false,
-                                validation: {
-                                    required: {message: "Date is required to be set"}
-                                }},
-                            Amount: {type: "number", editable: true, nullable:false,
-                                validation: {
-                                     required: {message: "Amount is required to be set"}
-                            }},
-                            Comment: {type : "string", editable: true},
-                            IsActive : {type: "boolean", editable: true},
-                            Ulc : {type : "string", editable: false},
-                            Dlc : {type : "date", editable:false}
-                            
-                        } // fields
-                    } // model
-                }// schema 
-            }); 
+                    },
+                    pageSize: 15,
+                    serverPaging: true,
+                    serverSorting: true,
+                    serverFiltering: true,
+                    error: showErrorMessage,
+                    schema: {
+                        data: "Data", // PagedResponse.Data
+                        total: "TotalCount", // PagedResponse.TotalCount
+                        model: {
+                            id: "BonusId",  // Data
+                            fields: {
+                                EmployeeId: { type: "number" },
+                                EmployeeLastName: {
+                                    type: "string",
+                                    editable: true, 
+                                    //validation: { required: {message: "Employee's last name is required"}}
+                                },
+                                Date: {
+                                    type: "date",
+                                    editable: true,
+                                    nullable: false,
+                                    validation: {
+                                        required: { message: "Date is required to be set" }
+                                    }
+                                },
+                                Amount: {
+                                    type: "number",
+                                    editable: true,
+                                    nullable: false,
+                                    validation: {
+                                        required: { message: "Amount is required to be set" }
+                                    }
+                                },
+                                Comment: { type: "string", editable: true },
+                                IsActive: { type: "boolean", editable: true },
+                                Ulc: { type: "string", editable: false },
+                                Dlc: { type: "date", editable: false }                            
+                            } // fields
+                        } // model
+                    }// schema 
+                });
 
-            // creates bonuses grid control
-            $("#bonusesGrid").kendoGrid({
-                dataSource:  bonusesDataSource,
-                toolbar: ["create"],
-                editable: "inline",
-                pageable: true,
-                filterable: {
-                            extra: false,
-                            operators: {
-                                string: {
-                                    contains: "Contains"
+                // creates bonuses grid control
+                $("#bonusesGrid").kendoGrid({
+                    dataSource: bonusesDataSource,
+                    toolbar: ["create"],
+                    editable: "inline",
+                    pageable: true,
+                    filterable: {
+                        extra: false,
+                        operators: {
+                            string: {
+                                contains: "Contains"
+                            }
+                        }
+                    },
+                    sortable: {
+                        mode: "single",
+                        allowUnsort: false
+                    },
+                    columns: [
+                        {
+                            field: "BonusId",
+                            hidden: true                        
+                        },
+                        {
+                            field: "EmployeeId",
+                            hidden: true
+                        },
+                        {
+                            field: "EmployeeLastName",
+                            title: "Employee",
+                            width: 130,
+                            filterable: true,
+                            editor: employeeAutocompletingEditor,
+                            template: "#=EmployeeLastName#"
+                        },
+                        {
+                            field: "Amount",
+                            title: "Amount",
+                            width: 95,
+                            filterable: {
+                                operators: {
+                                    number: {
+                                        eq: "Is eqaul to",
+                                    }
                                 }
                             }
                         },
-                sortable: {
-                            mode: "single",
-                            allowUnsort: false
+                        {
+                            field: "Date",
+                            width: 100,
+                            filterable: {
+                                extra: true,
+                                messages: {
+                                    and : "And",
+                                    or: "",
+                                },
+                                operators: {
+                                    date: {
+                                        gte: "from",
+                                        lte: "to",
+                                    }
+                                    
+                                }
+                            },
+                            template: '#= kendo.toString(Date,"MM/dd/yyyy") #'
+                        },                    
+                        {
+                            field: "Comment",
+                            titel: "Comment",
+                            filterable: {
+                                operators: {
+                                    number: {
+                                        contains: "Contains"
+                                    }
+                                }
+                            }
                         },
-                columns: [
-                    {
-                        field: "BonusId",
-                        hidden: true
-                        
-                    },
-                    {
-                        field: "EmployeeId",
-                        hidden: true
-                    },
-                    {   field: "EmployeeLastName",
-                        title: "Employee",
-                        filterable: true,
-                        editor: employeeAutocompletingEditor,
-                        template: "#=EmployeeLastName#"
-                    },
-                    { 
-                        field: "Amount",
-                        title: "Amount",
-                        filterable: {
-                            operators: {
-                              number: {
-                                eq: "Is eqaul to",
-                              }
+                        {
+                            field: "IsActive",
+                            width: 78,
+                            filterable: true,
+                            title: "Active"                        
+                        }, {
+                            field: "Ulc",
+                            width: 70,
+                            title: "ULC",
+                            filterable: {
+                                operators: {
+                                    string: {
+                                        contains: "Contains"
+                                    }
+                                }
                             }
-                          }
+                        }, {
+                            field: "Dlc",
+                            title: "DLC",
+                            filterable: {
+                                operators: {
+                                    date: {
+                                        eq: "Is eqaul to",
+                                    }
+                                }
+                            },
+                            width: 95,
+                            template: '#= kendo.toString(Dlc,"MM/dd/yyyy") #'
+                        },
+                        {
+                            command: ["edit"],
+                            width: 105,
+                            title: " "
+                        }
+                    ],
+                    save: function(e) {
+                        if (newValueEmployeeId !== undefined && newValueEmployeeLastName !== undefined) {
+                            e.model.EmployeeId = newValueEmployeeId; // it's a hack to bind model and autocomplete control
+                            e.model.EmployeeLastName = newValueEmployeeLastName;
+                        }
                     },
-                    {
-                        field: "Date",
-                        width:  95,
-                        filterable: {
-                            operators: {
-                              date: {
-                                eq: "Is eqaul to",
-                              }
-                            }
-                          },
-                        template: '#= kendo.toString(Date,"MM/dd/yyyy") #' 
+                    edit: function(e) {
+                        setCurrentValueEmployeeIdAndLastName(e.model.EmployeeId, e.model.EmployeeLastName);
                     },
-                    
-                    {
-                        field: "Comment",
-                        titel: "Comment",
-                        filterable: {
-                            operators: {
-                              number: {
-                                contains: "Contains"
-                              }
-                            }
-                          }
-                    },
-                    {
-                        field: "IsActive",
-                        width:  70,
-                        filterable: true,
-                        title: "Active"
-                        
-                    }, {
-                        field: "Ulc",
-                        width:  95,
-                        title: "ULC",
-                        filterable: {
-                            operators: {
-                              string: {
-                                contains: "Contains"
-                              }
-                            }
-                          }
-                    }, {
-                        field: "Dlc",
-                        title: "DLC",
-                        filterable: {
-                            operators: {
-                              date: {
-                                eq: "Is eqaul to",
-                              }
-                            }
-                          },
-                        width:  95,
-                        template: '#= kendo.toString(Dlc,"MM/dd/yyyy") #' 
-                    },
-                    { command: ["edit"],
-                        width: 105,
-                        title: " " }
-                ],
-                save: function (e) {
-                    if (newValueEmployeeId !== undefined && newValueEmployeeLastName !== undefined) {
-                        e.model.EmployeeId = newValueEmployeeId; // it's a hack to bind model and autocomplete control
-                        e.model.EmployeeLastName = newValueEmployeeLastName;
+                    cancel: function(e) {
+                        setCurrentValueEmployeeIdAndLastName(e.model.EmployeeId, e.model.EmployeeLastName);
                     }
-                },
-                edit: function(e) {
-                    setCurrentValueEmployeeIdAndLastName(e.model.EmployeeId, e.model.EmployeeLastName);
-                },
-                 cancel: function (e) {
-                     setCurrentValueEmployeeIdAndLastName(e.model.EmployeeId, e.model.EmployeeLastName);
-                }
+                });
+
+
             });
-            
-            
-        }); // end of ready function
+// end of ready function
     </script>
-</div>
+    </div>
+}
+else
+{
+
+}
