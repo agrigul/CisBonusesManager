@@ -16,6 +16,9 @@ namespace Web.Infrastructure.Repository
     /// </summary>
     public class BonusesRepository : IRepository<BonusAggregate>
     {
+        //Thu Apr 04 2013 00:00:00 GMT+0300 (FLE Daylight Time)"
+        const string DateTimeFormat = "ddd MMM dd yyyy hh:mm:ss"; // string format from UI
+
         /// <summary>
         /// The context of database
         /// </summary>
@@ -38,17 +41,17 @@ namespace Web.Infrastructure.Repository
             //dbContext = new DatabaseContext();
         }
 
-//        /// <summary>
-//        /// Performs application-defined tasks associated with freeing,
-//        /// releasing, or resetting unmanaged resources.
-//        /// </summary>
-//        public void Dispose()
-//        {
-//            if (dbContext == null) return;
-//
-//            dbContext.Dispose();
-//            dbContext = null;
-//        }
+        //        /// <summary>
+        //        /// Performs application-defined tasks associated with freeing,
+        //        /// releasing, or resetting unmanaged resources.
+        //        /// </summary>
+        //        public void Dispose()
+        //        {
+        //            if (dbContext == null) return;
+        //
+        //            dbContext.Dispose();
+        //            dbContext = null;
+        //        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class.
@@ -114,7 +117,6 @@ namespace Web.Infrastructure.Repository
             query = SetFiltering(filterField, filterValue, query);
 
             int numberOfItemsInDb = query.Count();
-
             query = SetSorting(sortField, sortDirection, query);
 
             List<BonusAggregate> result = (query.Skip(skip)
@@ -132,8 +134,7 @@ namespace Web.Infrastructure.Repository
         /// <returns>IQueryable{BonusAggregate}.</returns>
         private IQueryable<BonusAggregate> SetFiltering(string filterField, string filterValue, IQueryable<BonusAggregate> query)
         {
-            //Thu Apr 04 2013 00:00:00 GMT+0300 (FLE Daylight Time)"
-            const string dateTimeFormat = "ddd MMM dd yyyy hh:mm:ss"; // string format from controll
+            
 
             switch (filterField)
             {
@@ -142,11 +143,15 @@ namespace Web.Infrastructure.Repository
                     break;
 
                 case "Date":
-                    filterValue = filterValue.Remove(filterValue.IndexOf('G')).Trim();
-                    DateTime date = DateTime.ParseExact(filterValue, dateTimeFormat, CultureInfo.InvariantCulture);
-                    query = query.Where(x => (x.Date.Year == date.Year &&
-                                              x.Date.Month == date.Month &&
-                                              x.Date.Day == date.Day));
+                    query = FormQueryWithDateFiltration(filterValue, query);
+
+
+//
+//                    filterValue = filterValue.Remove(filterValue.IndexOf('G')).Trim();
+//                    DateTime date = DateTime.ParseExact(filterValue, dateTimeFormat, CultureInfo.InvariantCulture);
+//                    query = query.Where(x => (x.Date.Year == date.Year &&
+//                                              x.Date.Month == date.Month &&
+//                                              x.Date.Day == date.Day));
                     break;
 
                 case "Amount":
@@ -169,7 +174,7 @@ namespace Web.Infrastructure.Repository
 
                 case "Dlc":
                     filterValue = filterValue.Remove(filterValue.IndexOf('G')).Trim();
-                    DateTime dlc = DateTime.ParseExact(filterValue, dateTimeFormat, CultureInfo.InvariantCulture);
+                    DateTime dlc = DateTime.ParseExact(filterValue, DateTimeFormat, CultureInfo.InvariantCulture);
                     query = query.Where(x => (x.Date.Year == dlc.Year &&
                                               x.Date.Month == dlc.Month &&
                                               x.Date.Day == dlc.Day));
@@ -177,6 +182,58 @@ namespace Web.Infrastructure.Repository
             }
 
             return query;
+        }
+
+        /// <summary>
+        /// Forms the date filtered request.
+        /// </summary>
+        /// <param name="filterValue">The filter value.</param>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
+        private static IQueryable<BonusAggregate> FormQueryWithDateFiltration(string filterValue, 
+                                                                              IQueryable<BonusAggregate> query)
+        {
+            string[] dateFilter = filterValue.Split(';');
+            
+            var fromDate = GetDateFromFilterValue(dateFilter[0]);
+
+            DateTime toDate = DateTime.MinValue;
+            if (dateFilter.Count() == 2)
+                toDate = GetDateFromFilterValue(dateFilter[1]);
+
+            
+            if (fromDate != DateTime.MinValue && toDate == DateTime.MinValue)
+            {
+                query = query.Where(x => x.Date >= fromDate);
+            }
+            else if (fromDate == DateTime.MinValue && toDate != DateTime.MinValue)
+            {
+                toDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59); // until the end of a day
+                query = query.Where(x => x.Date <= toDate);
+            }
+            else if (fromDate != DateTime.MinValue && toDate != DateTime.MinValue)
+            {
+                toDate = new DateTime(toDate.Year, toDate.Month, toDate.Day, 23, 59, 59);
+                query = query.Where(x => x.Date >= fromDate && x.Date <= toDate);
+            }
+
+            return query;
+        }
+
+        /// <summary>
+        /// Gets the date from filter value.
+        /// </summary>
+        /// <param name="valueFromFilter">The value from filter.</param>
+        /// <returns></returns>
+        private static DateTime GetDateFromFilterValue(string valueFromFilter)
+        {
+            DateTime extractingDate = DateTime.MinValue;
+            if (!string.IsNullOrEmpty(valueFromFilter.Trim()))
+            {
+                string dateString = valueFromFilter.Remove(valueFromFilter.IndexOf('G')).Trim();
+                extractingDate = DateTime.ParseExact(dateString, DateTimeFormat, CultureInfo.InvariantCulture);
+            }
+            return extractingDate;
         }
 
         /// <summary>
@@ -250,7 +307,7 @@ namespace Web.Infrastructure.Repository
         /// Saves the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <exception cref="System.ArgumentNullException">Save;BonusAggregate item shouldn't be null</exception>
+        /// <exception cref="System.ArgumentNullException">Save;BonusAggregate item shouldn not be null</exception>
         public void Save(BonusAggregate item)
         {
             Save(new List<BonusAggregate> { item });
@@ -260,20 +317,20 @@ namespace Web.Infrastructure.Repository
         /// Saves the specified items.
         /// </summary>
         /// <param name="items">The items.</param>
-        /// <exception cref="System.ArgumentNullException">Save;List of Bonuses shouldn't be null</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">Save;List of Bonuses can't be empty</exception>
+        /// <exception cref="System.ArgumentNullException">Save;List of Bonuses shouldn not be null</exception>
+        /// <exception cref="System.ArgumentOutOfRangeException">Save;List of Bonuses can not be empty</exception>
         public void Save(IEnumerable<BonusAggregate> items)
         {
             if (items == null)
-                throw new ArgumentNullException("Save", "List of Bonuses shouldn't be null");
+                throw new ArgumentNullException("Save", "List of Bonuses should not be null");
 
             if (!items.Any())
-                throw new ArgumentOutOfRangeException("Save", "List of Bonuses can't be empty");
+                throw new ArgumentOutOfRangeException("Save", "List of Bonuses can not be empty");
 
 
             var employeesRepository = new EmployeesRepository(dbContext);
 
-            //context doesn't want to save correctly without previous request
+            //context doesn not want to save correctly without previous request
             List<int> employees = (from b in items
                                    select b.EmployeeId).ToList();
             IList<Employee> attachedEmployees = employeesRepository.GetByIdList(employees);

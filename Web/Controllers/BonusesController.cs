@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
 using System.Net;
 using System.Web.Mvc;
+using Web.Filters;
 using Web.Models;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
@@ -11,21 +14,26 @@ namespace Web.Controllers
     /// <summary>
     /// Class BonusesController
     /// </summary>
+    [Authorize]
+    [InitializeSimpleMembership]
     public class BonusesController : Controller
     {
+        /// <summary>
+        /// The server error message prefix
+        /// </summary>
+        private const string ServerErrorMsg = "Server error. ";
+
         /// <summary>
         /// The repository of bonuses
         /// </summary>
         private IRepository<BonusAggregate> BonusesRepository { get; set; }
-
-        private IRepository<EmployeesRepository> EmployeesRepository { get; set; }
-
+        
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesController"/> class by default.
         /// </summary>
         public BonusesController()
         {
-            BonusesRepository = new BonusesRepository(); // dbContext from config
         }
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesController"/> class.
@@ -43,7 +51,7 @@ namespace Web.Controllers
         /// </summary>
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
-        {
+        { 
             return View();
         }
 
@@ -59,36 +67,54 @@ namespace Web.Controllers
             string sortDirection = String.Empty;
             string filterField = String.Empty;
             string filterValue = String.Empty;
-
-            if (Request != null)
-            {
-                sortingField = Request.Params["sort[0][field]"];
-                sortDirection = Request.Params["sort[0][dir]"];
-                filterField = Request.Params["filter[filters][0][field]"];
-                filterValue = Request.Params["filter[filters][0][value]"];
-            }
-
+            
+            
             PagedResponse<BonusAggregate> bonuses;
-            SortingDirection direction;
-
-            if (String.IsNullOrEmpty(sortDirection))
+            try
             {
-                direction = SortingDirection.Desc;
-            }
-            else
-            {
-                direction = sortDirection == "asc" ? SortingDirection.Asc : SortingDirection.Desc;
-            }
+                if (Request != null)
+                {
+                    sortingField = Request.Params["sort[0][field]"];
+                    sortDirection = Request.Params["sort[0][dir]"];
+                    filterField = Request.Params["filter[filters][0][field]"];
+                    
+                    filterValue = FilterBuilder.FormFilterValue(Request.Params, filterField);
+                }
+                SortingDirection direction;
 
-            using (var dbContext = new DatabaseContext())
-            {
-                BonusesRepository = new BonusesRepository(dbContext);
-                bonuses = BonusesRepository.FindAll(skip, take, sortingField, direction, filterField, filterValue);
-            }
+                if (String.IsNullOrEmpty(sortDirection))
+                {
+                    direction = SortingDirection.Desc;
+                }
+                else
+                {
+                    direction = sortDirection == "asc" ? SortingDirection.Asc : SortingDirection.Desc;
+                }
 
+                using (var dbContext = new DatabaseContext())
+                {
+                    BonusesRepository = new BonusesRepository(dbContext);
+                    bonuses = BonusesRepository.FindAll(skip, take, sortingField, direction, filterField, filterValue);
+                }
+            }
+            catch(EntityException e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return Json(string.Format("{0} {1}. Possible you have no permission to access", 
+                            ServerErrorMsg, e.Message),
+                            JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception e)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return Json(string.Format("{0} Database read bonuses failed: {1}", ServerErrorMsg, e.Message),
+                            JsonRequestBehavior.AllowGet);
+            }
 
             return Json(bonuses, JsonRequestBehavior.AllowGet);
         }
+
+     
 
         /// <summary>
         /// Gets the list of employees by last name.
@@ -96,35 +122,29 @@ namespace Web.Controllers
         /// <returns>JsonResult.</returns>
         public JsonResult GetJsonEmployeesByLastName()
         {
-            string lastName = Request.Params["filter[filters][0][value]"];
-
             IList<Employee> employees = new List<Employee>();
-
-            if (String.IsNullOrEmpty(lastName) == false)
+            string lastName = FilterBuilder.FormFilterValue(Request.Params);
+            
+            try
             {
-                using (var dbContext = new DatabaseContext())
+                if (String.IsNullOrEmpty(lastName) == false)
                 {
-                    var employeesRepository = new EmployeesRepository(dbContext);
-                    employees = employeesRepository.FindByLastName(lastName);
+                    using (var dbContext = new DatabaseContext())
+                    {
+                        var employeesRepository = new EmployeesRepository(dbContext);
+                        employees = employeesRepository.FindByLastName(lastName);
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return Json(string.Format("{0} Database read employees failed: {1}", ServerErrorMsg, ex.Message), 
+                            JsonRequestBehavior.AllowGet);
+            }
+            
             return Json(employees, JsonRequestBehavior.AllowGet);
         }
-
-        //        //
-        //        // GET: /Bonuses/Create
-        //
-        //        /// <summary>
-        //        /// Creates new bonus.
-        //        /// </summary>
-        //        /// <returns>ActionResult.</returns>
-        //        public ActionResult Create()
-        //        {
-        //            //   ViewBag.Id = new SelectList(db.Employees, "Id", "UserName");
-        //            return View();
-        //        }
-
 
         /// <summary>
         /// Creates the specified bonus.
@@ -132,17 +152,36 @@ namespace Web.Controllers
         /// <param name="bonusDto">The bonus DTO object.</param>
         /// <returns>Http status code result.</returns>
         [HttpPost]
-        public HttpStatusCodeResult Create(BonusDto bonusDto)
+        public JsonResult Create(BonusDto bonusDto)
         {
-
-            using (var dbContext = new DatabaseContext())
+            BonusAggregate bonus;
+            try
             {
-                BonusesRepository = new BonusesRepository(dbContext);
-                BonusAggregate bonus = new BonusFactory().Create(bonusDto);
-                BonusesRepository.Save(bonus);
+                if (bonusDto.Amount <= 0)
+                    throw new ArgumentOutOfRangeException("Amount should be more than 0");
+
+                if(bonusDto.EmployeeId  <= 0)
+                    throw new ArgumentNullException("You should specify an existing employee");
+
+                using (var dbContext = new DatabaseContext())
+                {
+                    BonusesRepository = new BonusesRepository(dbContext);
+                    bonus = new BonusFactory().Create(bonusDto);
+                    BonusesRepository.Save(bonus);
+                }
+
+                Response.StatusCode = (int)HttpStatusCode.OK;
+                
+            }
+            catch (Exception ex)
+            {
+                //throw new Exception(string.Format("{0} the create bonus failed: {1}", ServerErrorMsg, ex.Message));
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return  Json(string.Format("{0} Create bonus failed: {1}", ServerErrorMsg, ex.Message));
             }
 
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            return Json(bonus);
+
         }
 
 
@@ -152,38 +191,47 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="bonusDto">The bonus DTO object.</param>
         /// <returns>Http status code result..</returns>
-        [HttpPut]
-        public HttpStatusCodeResult Edit(BonusDto bonusDto)
+        [HttpPost]
+        public JsonResult Edit(BonusDto bonusDto)
         {
-            if (bonusDto == null)
-                throw new ArgumentNullException("bonusDto can't be null in controller Edit");
-
             Employee employee = null;
-            if (bonusDto.EmployeeId != 0)
+            try
+            {
+                if (bonusDto == null)
+                    throw new ArgumentNullException("bonusDto can not be null in controller Edit");
+
+                if (bonusDto.EmployeeId != 0)
+                    using (var dbContext = new DatabaseContext())
+                    {
+                        var employeeRepository = new EmployeesRepository(dbContext);
+                        employee = employeeRepository.GetById(bonusDto.EmployeeId);
+                    }
+
                 using (var dbContext = new DatabaseContext())
                 {
-                    var employeeRepository = new EmployeesRepository(dbContext);
-                    employee = employeeRepository.GetById(bonusDto.EmployeeId);
+                    BonusesRepository = new BonusesRepository(dbContext);
+                    BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
+                    bonus.Comment = bonusDto.Comment;
+                    bonus.Amount = bonusDto.Amount;
+                    bonus.Date = bonusDto.Date;
+                    bonus.IsActive = bonusDto.IsActive;
+
+                    if (employee != null &&
+                        employee.EmployeeId != bonus.EmployeeId)
+                        bonus.Employee = employee;
+
+                    BonusesRepository.Save(bonus);
                 }
+                Response.StatusCode = (int)HttpStatusCode.OK;
 
-            using (var dbContext = new DatabaseContext())
+            }
+            catch (Exception ex)
             {
-                BonusesRepository = new BonusesRepository(dbContext);
-                BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
-                bonus.Comment = bonusDto.Comment;
-                bonus.Amount = bonusDto.Amount;
-                bonus.Date = bonusDto.Date;
-                bonus.IsActive = bonusDto.IsActive;
-
-                if (employee != null &&
-                    employee.EmployeeId != bonus.EmployeeId)
-                    bonus.Employee = employee;
-
-                BonusesRepository.Save(bonus);
+                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                return Json(string.Format("{0} database updated bonus failed: {1}", ServerErrorMsg, ex.Message));
             }
 
-
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            return Json(employee);
 
         }
     }

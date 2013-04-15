@@ -15,8 +15,8 @@ namespace Web.Infrastructure.Mapping
         /// </summary>
         public BonusMapping()
         {
-            //ToTable("CompDev.vwBonuses"); // TODO: uncomment for real database
-            ToTable("vwBonuses");
+            ToTable("CompDev.vwBonuses"); // TODO: uncomment this line for real database
+            //ToTable("vwBonuses");
 
             HasKey(x => x.BonusId);
             Property(x => x.BonusId)

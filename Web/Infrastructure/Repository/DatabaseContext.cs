@@ -1,5 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using Web.Infrastructure.Mapping;
+using Web.Models;
 using Web.Models.Bonuses;
 
 namespace Web.Infrastructure.Repository
@@ -33,6 +35,36 @@ namespace Web.Infrastructure.Repository
             : base(ConnectionStringName)
         {
             Database.SetInitializer<DatabaseContext>(null); // without creating new database
+
+            var user = SessionRepository.CurrentSession.UserCredentials as LoginModel;
+            //TODO: delete hardcode below
+            if(user == null)
+                throw new ArgumentNullException("DatabaseContext", "UserCredentials object can not be null");
+
+            string connectionString = string.Format("{0} User ID={1};Password={2}",
+                                                   System.Configuration.ConfigurationManager.
+                                                     ConnectionStrings[ConnectionStringName].ConnectionString,
+                                                   user.UserName,
+                                                   user.Password
+                                                   );
+            this.Database.Connection.ConnectionString = connectionString;
+
+        }
+
+
+        public DatabaseContext(string login, string password)
+            : base(ConnectionStringName)
+        {
+            Database.SetInitializer<DatabaseContext>(null); // without creating new database
+            
+            string connectionString = string.Format("{0} User ID={1};Password={2}",
+                                                    System.Configuration.ConfigurationManager.
+                                                      ConnectionStrings[ConnectionStringName].ConnectionString,
+                                                    login,
+                                                    password
+                                                    );
+
+            this.Database.Connection.ConnectionString = connectionString;
         }
 
         /// <summary>
