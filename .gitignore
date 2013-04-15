@@ -17,3 +17,5 @@ CisBonusManager.suo
 *.dat
 *.user
 *.suo
+/Web/App_Data/ASPNETDB.MDF
+/Web/App_Data/aspnetdb_log.LDF
