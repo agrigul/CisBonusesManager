@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 
-namespace Web.Models
+namespace Web.Models.ValueObjects
 {
     /// <summary>
     /// Build different filter values depending on request params

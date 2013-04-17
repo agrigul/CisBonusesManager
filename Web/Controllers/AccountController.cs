@@ -9,6 +9,7 @@ using Microsoft.Web.WebPages.OAuth;
 using Web.Filters;
 using Web.Infrastructure.Repository;
 using Web.Models;
+using Web.Models.ValueObjects;
 using WebMatrix.WebData;
 
 namespace Web.Controllers

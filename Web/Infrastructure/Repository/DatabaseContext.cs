@@ -3,6 +3,8 @@ using System.Data.Entity;
 using Web.Infrastructure.Mapping;
 using Web.Models;
 using Web.Models.Bonuses;
+using Web.Models.Employee;
+using Web.Models.ValueObjects;
 
 namespace Web.Infrastructure.Repository
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Web.Models
+namespace Web.Models.ValueObjects
 {
     /// <summary>
     /// Class for response with paging

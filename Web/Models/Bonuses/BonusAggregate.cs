@@ -22,17 +22,18 @@ namespace Web.Models.Bonuses
         /// <summary>
         /// The employee
         /// </summary>
-        private Employee employee;
+        private Employee.Employee employee;
 
         /// <summary>
         /// Gets or sets the employee.
         /// </summary>
         /// <value>The employee.</value>
-        public Employee Employee
+        public Employee.Employee Employee
         {
             get { return employee; }
-            set{
-                if(value == null)
+            set
+            {
+                if (value == null)
                     throw new ArgumentNullException("Employee", "Employee can not be null");
 
                 employee = value;
@@ -40,18 +41,6 @@ namespace Web.Models.Bonuses
             }
         }
 
-        /// <summary>
-        /// Gets the name of the employee user.
-        /// </summary>
-        /// <value>The name of the employee user.</value>
-        [Obsolete]
-        private string EmployeeUserName
-        {
-            get
-            {
-                return Employee == null ? "" : Employee.UserName;
-            }
-        }
 
         /// <summary>
         /// Gets the last name of the employee.
@@ -66,29 +55,34 @@ namespace Web.Models.Bonuses
         }
 
         /// <summary>
-        /// Gets the employee last name (ukr).
-        /// </summary>
-        /// <value>The employee last name (ukr)</value>
-        [Obsolete]
-        private string EmployeeLastNameUkr
-        {
-            get
-            {
-                return Employee == null ? "" : Employee.LastNameUkr;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the date.
         /// </summary>
         /// <value>The date.</value>
         public DateTime Date { get; set; }
 
         /// <summary>
+        /// The amount
+        /// </summary>
+        private decimal amount;
+
+        /// <summary>
         /// Gets or sets the amount.
         /// </summary>
         /// <value>The amount.</value>
-        public decimal Amount { get; set; }
+        public decimal Amount
+        {
+            get
+            {
+                return amount;
+            }
+            set
+            {
+                if(value <= 0)
+                    throw new ArgumentOutOfRangeException("amount of bonus can not be 0 or negative");
+
+                amount = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the comment. Max length 255
@@ -130,44 +124,20 @@ namespace Web.Models.Bonuses
         /// <param name="amount">The amount.</param>
         /// <param name="comment">The comment.</param>
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
-        internal BonusAggregate(Employee employee,
-                                DateTime date,
-                                decimal amount,
-                                string comment,
-                                bool isActive, 
-                                int bonusId)
-        {
-            if (employee == null)
-                throw new ArgumentNullException("Bonus", "Employee can not be null to create bonus instance");
-            Employee = employee;
-            
-            SetBonusProperties(date, amount, comment, isActive, bonusId);
-        }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BonusAggregate"/> class.
-        /// </summary>
-        /// <param name="employeeId">The employee id.</param>
-        /// <param name="date">The date.</param>
-        /// <param name="amount">The amount.</param>
-        /// <param name="comment">The comment.</param>
-        /// <param name="isActive">if set to <c>true</c> [is active].</param>
-        /// <param name="bonusId">The bonus id.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">Bonus;Employee's id can not be zero or negative to create bonus instance</exception>
-        internal BonusAggregate(int employeeId,
+        internal BonusAggregate(Employee.Employee employee,
                                 DateTime date,
                                 decimal amount,
                                 string comment,
                                 bool isActive,
                                 int bonusId)
         {
-            if (employeeId <= 0)
-                throw new ArgumentOutOfRangeException("Bonus", "Employee's id can not be zero or negative to create bonus instance");
-            
-            EmployeeId = employeeId;
+            if (employee == null)
+                throw new ArgumentNullException("Bonus", "Employee can not be null to create bonus instance");
+            Employee = employee;
 
             SetBonusProperties(date, amount, comment, isActive, bonusId);
         }
+
 
 
         /// <summary>

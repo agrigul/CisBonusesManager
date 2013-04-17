@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Linq;
 using Web.Models;
 using Web.Models.Bonuses;
+using Web.Models.Employee;
+using Web.Models.ValueObjects;
 
 namespace Web.Infrastructure.Repository
 {

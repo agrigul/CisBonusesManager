@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.Net;
 using System.Web.Mvc;
 using Web.Filters;
-using Web.Models;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
+using Web.Models.Employee;
+using Web.Models.ValueObjects;
 
 namespace Web.Controllers
 {
@@ -27,8 +27,8 @@ namespace Web.Controllers
         /// The repository of bonuses
         /// </summary>
         private IRepository<BonusAggregate> BonusesRepository { get; set; }
-        
-        
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesController"/> class by default.
         /// </summary>
@@ -51,7 +51,7 @@ namespace Web.Controllers
         /// </summary>
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
-        { 
+        {
             return View();
         }
 
@@ -63,44 +63,27 @@ namespace Web.Controllers
         /// <returns>JsonResult of bonuses</returns>
         public JsonResult GetPagedJsonBonuses(int take, int skip)
         {
-            string sortingField = String.Empty;
-            string sortDirection = String.Empty;
-            string filterField = String.Empty;
-            string filterValue = String.Empty;
-            
-            
+
             PagedResponse<BonusAggregate> bonuses;
             try
             {
-                if (Request != null)
-                {
-                    sortingField = Request.Params["sort[0][field]"];
-                    sortDirection = Request.Params["sort[0][dir]"];
-                    filterField = Request.Params["filter[filters][0][field]"];
-                    
-                    filterValue = FilterBuilder.FormFilterValue(Request.Params, filterField);
-                }
-                SortingDirection direction;
-
-                if (String.IsNullOrEmpty(sortDirection))
-                {
-                    direction = SortingDirection.Desc;
-                }
-                else
-                {
-                    direction = sortDirection == "asc" ? SortingDirection.Asc : SortingDirection.Desc;
-                }
+                var filteredRequest = new FilteredRequest(Request.Params);
 
                 using (var dbContext = new DatabaseContext())
                 {
                     BonusesRepository = new BonusesRepository(dbContext);
-                    bonuses = BonusesRepository.FindAll(skip, take, sortingField, direction, filterField, filterValue);
+                    bonuses = BonusesRepository.FindAll(skip,
+                                                        take,
+                                                        filteredRequest.SortingField,
+                                                        filteredRequest.Direction,
+                                                        filteredRequest.FilterField,
+                                                        filteredRequest.FilterPattern);
                 }
             }
-            catch(EntityException e)
+            catch (EntityException e)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} {1}. Possible you have no permission to access", 
+                return Json(string.Format("{0} {1}. Possible you have no permission to access",
                             ServerErrorMsg, e.Message),
                             JsonRequestBehavior.AllowGet);
             }
@@ -114,7 +97,7 @@ namespace Web.Controllers
             return Json(bonuses, JsonRequestBehavior.AllowGet);
         }
 
-     
+
 
         /// <summary>
         /// Gets the list of employees by last name.
@@ -124,7 +107,7 @@ namespace Web.Controllers
         {
             IList<Employee> employees = new List<Employee>();
             string lastName = FilterBuilder.FormFilterValue(Request.Params);
-            
+
             try
             {
                 if (String.IsNullOrEmpty(lastName) == false)
@@ -135,14 +118,18 @@ namespace Web.Controllers
                         employees = employeesRepository.FindByLastName(lastName);
                     }
                 }
+
             }
             catch (Exception ex)
             {
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} Database read employees failed: {1}", ServerErrorMsg, ex.Message), 
+                return Json(string.Format("{0} Database read employees failed: {1}", ServerErrorMsg, ex.Message),
                             JsonRequestBehavior.AllowGet);
             }
-            
+
+            if (employees.Count == 0)                    // this's because some magic happens with autocomplete combobox 
+                employees.Add(new Employee("", "", "")); // and it start to cycle ajax requests if the list is empty or null
+
             return Json(employees, JsonRequestBehavior.AllowGet);
         }
 
@@ -160,7 +147,7 @@ namespace Web.Controllers
                 if (bonusDto.Amount <= 0)
                     throw new ArgumentOutOfRangeException("Amount should be more than 0");
 
-                if(bonusDto.EmployeeId  <= 0)
+                if (bonusDto.EmployeeId <= 0)
                     throw new ArgumentNullException("You should specify an existing employee");
 
                 using (var dbContext = new DatabaseContext())
@@ -171,13 +158,13 @@ namespace Web.Controllers
                 }
 
                 Response.StatusCode = (int)HttpStatusCode.OK;
-                
+
             }
             catch (Exception ex)
             {
                 //throw new Exception(string.Format("{0} the create bonus failed: {1}", ServerErrorMsg, ex.Message));
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return  Json(string.Format("{0} Create bonus failed: {1}", ServerErrorMsg, ex.Message));
+                return Json(string.Format("{0} Create bonus failed: {1}", ServerErrorMsg, ex.Message));
             }
 
             return Json(bonus);

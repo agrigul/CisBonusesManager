@@ -6,8 +6,11 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Objects;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Web.Models;
 using Web.Models.Bonuses;
+using Web.Models.Employee;
+using Web.Models.ValueObjects;
 
 namespace Web.Infrastructure.Repository
 {
@@ -18,7 +21,7 @@ namespace Web.Infrastructure.Repository
     {
         //Thu Apr 04 2013 00:00:00 GMT+0300 (FLE Daylight Time)"
         const string DateTimeFormat = "ddd MMM dd yyyy hh:mm:ss"; // string format from UI
-
+        const string DateRegExpPattern = @"[A-Za-z0-9 ]+ [\d]{2}:[\d]{2}:[\d]{2}";
         /// <summary>
         /// The context of database
         /// </summary>
@@ -144,14 +147,6 @@ namespace Web.Infrastructure.Repository
 
                 case "Date":
                     query = FormQueryWithDateFiltration(filterValue, query);
-
-
-//
-//                    filterValue = filterValue.Remove(filterValue.IndexOf('G')).Trim();
-//                    DateTime date = DateTime.ParseExact(filterValue, dateTimeFormat, CultureInfo.InvariantCulture);
-//                    query = query.Where(x => (x.Date.Year == date.Year &&
-//                                              x.Date.Month == date.Month &&
-//                                              x.Date.Day == date.Day));
                     break;
 
                 case "Amount":
@@ -173,8 +168,7 @@ namespace Web.Infrastructure.Repository
                     break;
 
                 case "Dlc":
-                    filterValue = filterValue.Remove(filterValue.IndexOf('G')).Trim();
-                    DateTime dlc = DateTime.ParseExact(filterValue, DateTimeFormat, CultureInfo.InvariantCulture);
+                    DateTime dlc = GetDateFromFilterValue(filterValue);
                     query = query.Where(x => (x.Date.Year == dlc.Year &&
                                               x.Date.Month == dlc.Month &&
                                               x.Date.Day == dlc.Day));
@@ -230,7 +224,10 @@ namespace Web.Infrastructure.Repository
             DateTime extractingDate = DateTime.MinValue;
             if (!string.IsNullOrEmpty(valueFromFilter.Trim()))
             {
-                string dateString = valueFromFilter.Remove(valueFromFilter.IndexOf('G')).Trim();
+                Regex pattern = new Regex(DateRegExpPattern);
+                Match match = pattern.Match(valueFromFilter);
+
+                string dateString = match.Value.Trim();
                 extractingDate = DateTime.ParseExact(dateString, DateTimeFormat, CultureInfo.InvariantCulture);
             }
             return extractingDate;
