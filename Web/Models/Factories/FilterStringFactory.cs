@@ -4,7 +4,7 @@ using System.Collections.Specialized;
 namespace Web.Models.Factories
 {
     /// <summary>
-    /// Build different filter values depending on request params
+    /// Builds different filter values depending on request params
     /// </summary>
     public static class FilterStringFactory
     {

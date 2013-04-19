@@ -5,7 +5,7 @@ using Web.Models.Bonuses;
 namespace Web.Models.Factories
 {
     /// <summary>
-    /// Class BonusFactory
+    /// BonusFactory create new bonus aggreagte
     /// </summary>
     public class BonusFactory
     {

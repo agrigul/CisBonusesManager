@@ -2,18 +2,16 @@
 
 namespace Web.Models.Bonuses
 {
+    /// <summary>
+    /// Tranport entity for correct convertation of bonues from UI to aggregate
+    /// </summary>
     public class BonusDto
     {
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
         /// <value>The id.</value>
-
-        private int id;
-
-        public int BonusId { 
-            get { return id; }
-            set { id = value; } }
+        public int BonusId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the employee.

@@ -15,7 +15,6 @@ namespace Web.Infrastructure.Repository
     /// </summary>
     public class BonusesRepository : IRepository<BonusAggregate>
     {
-        //Thu Apr 04 2013 00:00:00 GMT+0300 (FLE Daylight Time)"
         /// <summary>
         /// The context of database
         /// </summary>

@@ -5,7 +5,7 @@ using Web.Models.ValueObjects;
 namespace Web.Models.Factories
 {
     /// <summary>
-    /// Class forms 
+    /// Buildes a query with sorting
     /// </summary>
     public class BonusesSortingQueryBuilder
     {
