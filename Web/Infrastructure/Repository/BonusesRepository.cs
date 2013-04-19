@@ -7,7 +7,6 @@ using System.Data.Objects;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Web.Models;
 using Web.Models.Bonuses;
 using Web.Models.Employee;
 using Web.Models.ValueObjects;
@@ -25,7 +24,7 @@ namespace Web.Infrastructure.Repository
         /// <summary>
         /// The context of database
         /// </summary>
-        private DatabaseContext dbContext;
+        private readonly DatabaseContext dbContext;
 
         /// <summary>
         /// The db set
@@ -44,17 +43,6 @@ namespace Web.Infrastructure.Repository
             //dbContext = new DatabaseContext();
         }
 
-        //        /// <summary>
-        //        /// Performs application-defined tasks associated with freeing,
-        //        /// releasing, or resetting unmanaged resources.
-        //        /// </summary>
-        //        public void Dispose()
-        //        {
-        //            if (dbContext == null) return;
-        //
-        //            dbContext.Dispose();
-        //            dbContext = null;
-        //        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class.
@@ -64,7 +52,7 @@ namespace Web.Infrastructure.Repository
         {
             if (dbContext == null)
                 throw new ArgumentNullException("BonusesRepository",
-                                                "DatabaseContext should be initialized first");
+                                                "databaseContext should be initialized first");
             this.dbContext = dbContext;
         }
 
@@ -319,10 +307,10 @@ namespace Web.Infrastructure.Repository
         public void Save(IEnumerable<BonusAggregate> items)
         {
             if (items == null)
-                throw new ArgumentNullException("Save", "List of Bonuses should not be null");
+                throw new ArgumentNullException("Save", "list of Bonuses should not be null");
 
             if (!items.Any())
-                throw new ArgumentOutOfRangeException("Save", "List of Bonuses can not be empty");
+                throw new ArgumentOutOfRangeException("Save", "list of Bonuses can not be empty");
 
 
             var employeesRepository = new EmployeesRepository(dbContext);

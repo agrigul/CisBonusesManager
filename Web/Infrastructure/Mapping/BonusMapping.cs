@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
-using Web.Models;
 using Web.Models.Bonuses;
 
 namespace Web.Infrastructure.Mapping
@@ -26,7 +25,7 @@ namespace Web.Infrastructure.Mapping
             //            HasRequired(x => x.Employee)
             //                      .WithMany()
             //                      .HasForeignKey(x => x.EmployeeId);
-            Property(x => x.EmployeeId); // ссылка на другую таблице
+            Property(x => x.EmployeeId); // link to another view
             Property(x => x.Date);
             Property(x => x.Amount);
             Property(x => x.Comment);

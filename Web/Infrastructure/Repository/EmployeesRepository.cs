@@ -32,19 +32,7 @@ namespace Web.Infrastructure.Repository
         {
             //dbContext = new DatabaseContext();
         }
-
-//        /// <summary>
-//        /// Performs application-defined tasks associated with freeing,
-//        /// releasing, or resetting unmanaged resources.
-//        /// </summary>
-//        public void Dispose()
-//        {
-//            if (dbContext == null) return;
-//
-//            dbContext.Dispose();
-//            dbContext = null;
-//        }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusesRepository"/> class.
         /// </summary>
@@ -53,7 +41,7 @@ namespace Web.Infrastructure.Repository
         {
             if (dbContext == null)
                 throw new ArgumentNullException("EmployeesRepository",
-                                                "DatabaseContext should be initialized first");
+                                                "databaseContext should be initialized first");
 
             this.dbContext = dbContext;
         }
@@ -129,10 +117,10 @@ namespace Web.Infrastructure.Repository
         public void Save(IEnumerable<Employee> items)
         {
             if (items == null)
-                throw new ArgumentNullException("Save", "List of Employee shouldn not be null");
+                throw new ArgumentNullException("Save", "list of Employee shouldn not be null");
 
             if (!items.Any())
-                throw new ArgumentOutOfRangeException("Save", "List of Employee can not be empty");
+                throw new ArgumentOutOfRangeException("Save", "list of Employee can not be empty");
 
             foreach (Employee employee in items)
             {
@@ -149,7 +137,7 @@ namespace Web.Infrastructure.Repository
         /// <exception cref="System.ArgumentNullException">Save;Employee item shouldn not be null</exception>
         public void Save(Employee item)
         {
-            throw new NotSupportedException("Employee entities can not be saved");
+            throw new NotSupportedException("employee entities can not be saved");
         }
 
         /// <summary>

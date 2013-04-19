@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Net;
 using System.Web.Mvc;
+using Web.Controllers.Attributes;
 using Web.Filters;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
@@ -14,15 +14,10 @@ namespace Web.Controllers
     /// <summary>
     /// Class BonusesController
     /// </summary>
-    [Authorize]
+    [System.Web.Mvc.Authorize]
     [InitializeSimpleMembership]
     public class BonusesController : Controller
     {
-        /// <summary>
-        /// The server error message prefix
-        /// </summary>
-        private const string ServerErrorMsg = "Server error. ";
-
         /// <summary>
         /// The repository of bonuses
         /// </summary>
@@ -61,37 +56,22 @@ namespace Web.Controllers
         /// <param name="take">Records to take.</param>
         /// <param name="skip">Records to skip.</param>
         /// <returns>JsonResult of bonuses</returns>
+        [AjaxErrorFilter]
         public JsonResult GetPagedJsonBonuses(int take, int skip)
         {
-
             PagedResponse<BonusAggregate> bonuses;
-            try
-            {
-                var filteredRequest = new FilteredRequest(Request.Params);
 
-                using (var dbContext = new DatabaseContext())
-                {
-                    BonusesRepository = new BonusesRepository(dbContext);
-                    bonuses = BonusesRepository.FindAll(skip,
-                                                        take,
-                                                        filteredRequest.SortingField,
-                                                        filteredRequest.Direction,
-                                                        filteredRequest.FilterField,
-                                                        filteredRequest.FilterPattern);
-                }
-            }
-            catch (EntityException e)
+            var filteredRequest = new FilteredRequest(Request.Params);
+
+            using (var dbContext = new DatabaseContext())
             {
-                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} {1}. Possible you have no permission to access",
-                            ServerErrorMsg, e.Message),
-                            JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception e)
-            {
-                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} Database read bonuses failed: {1}", ServerErrorMsg, e.Message),
-                            JsonRequestBehavior.AllowGet);
+                BonusesRepository = new BonusesRepository(dbContext);
+                bonuses = BonusesRepository.FindAll(skip,
+                                                    take,
+                                                    filteredRequest.SortingField,
+                                                    filteredRequest.Direction,
+                                                    filteredRequest.FilterField,
+                                                    filteredRequest.FilterPattern);
             }
 
             return Json(bonuses, JsonRequestBehavior.AllowGet);
@@ -103,29 +83,22 @@ namespace Web.Controllers
         /// Gets the list of employees by last name.
         /// </summary>
         /// <returns>JsonResult.</returns>
+        [AjaxErrorFilter]
         public JsonResult GetJsonEmployeesByLastName()
         {
             IList<Employee> employees = new List<Employee>();
             string lastName = FilterBuilder.FormFilterValue(Request.Params);
 
-            try
-            {
-                if (String.IsNullOrEmpty(lastName) == false)
-                {
-                    using (var dbContext = new DatabaseContext())
-                    {
-                        var employeesRepository = new EmployeesRepository(dbContext);
-                        employees = employeesRepository.FindByLastName(lastName);
-                    }
-                }
 
-            }
-            catch (Exception ex)
+            if (String.IsNullOrEmpty(lastName) == false)
             {
-                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} Database read employees failed: {1}", ServerErrorMsg, ex.Message),
-                            JsonRequestBehavior.AllowGet);
+                using (var dbContext = new DatabaseContext())
+                {
+                    var employeesRepository = new EmployeesRepository(dbContext);
+                    employees = employeesRepository.FindByLastName(lastName);
+                }
             }
+
 
             if (employees.Count == 0)                    // this's because some magic happens with autocomplete combobox 
                 employees.Add(new Employee("", "", "")); // and it start to cycle ajax requests if the list is empty or null
@@ -138,37 +111,26 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="bonusDto">The bonus DTO object.</param>
         /// <returns>Http status code result.</returns>
+        [AjaxErrorFilter]
         [HttpPost]
         public JsonResult Create(BonusDto bonusDto)
         {
             BonusAggregate bonus;
-            try
+
+            if (bonusDto.Amount <= 0)
+                throw new ArgumentOutOfRangeException("Amount should be more than 0");
+
+            if (bonusDto.EmployeeId <= 0)
+                throw new ArgumentNullException("You should specify an existing employee");
+
+            using (var dbContext = new DatabaseContext())
             {
-                if (bonusDto.Amount <= 0)
-                    throw new ArgumentOutOfRangeException("Amount should be more than 0");
-
-                if (bonusDto.EmployeeId <= 0)
-                    throw new ArgumentNullException("You should specify an existing employee");
-
-                using (var dbContext = new DatabaseContext())
-                {
-                    BonusesRepository = new BonusesRepository(dbContext);
-                    bonus = new BonusFactory().Create(bonusDto);
-                    BonusesRepository.Save(bonus);
-                }
-
-                Response.StatusCode = (int)HttpStatusCode.OK;
-
-            }
-            catch (Exception ex)
-            {
-                //throw new Exception(string.Format("{0} the create bonus failed: {1}", ServerErrorMsg, ex.Message));
-                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} Create bonus failed: {1}", ServerErrorMsg, ex.Message));
+                BonusesRepository = new BonusesRepository(dbContext);
+                bonus = new BonusFactory().Create(bonusDto);
+                BonusesRepository.Save(bonus);
             }
 
             return Json(bonus);
-
         }
 
 
@@ -178,48 +140,39 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="bonusDto">The bonus DTO object.</param>
         /// <returns>Http status code result..</returns>
+        [AjaxErrorFilter]
         [HttpPost]
         public JsonResult Edit(BonusDto bonusDto)
         {
             Employee employee = null;
-            try
-            {
-                if (bonusDto == null)
-                    throw new ArgumentNullException("bonusDto can not be null in controller Edit");
 
-                if (bonusDto.EmployeeId != 0)
-                    using (var dbContext = new DatabaseContext())
-                    {
-                        var employeeRepository = new EmployeesRepository(dbContext);
-                        employee = employeeRepository.GetById(bonusDto.EmployeeId);
-                    }
+            if (bonusDto == null)
+                throw new ArgumentNullException("bonusDto can not be null in controller Edit");
 
+            if (bonusDto.EmployeeId != 0)
                 using (var dbContext = new DatabaseContext())
                 {
-                    BonusesRepository = new BonusesRepository(dbContext);
-                    BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
-                    bonus.Comment = bonusDto.Comment;
-                    bonus.Amount = bonusDto.Amount;
-                    bonus.Date = bonusDto.Date;
-                    bonus.IsActive = bonusDto.IsActive;
-
-                    if (employee != null &&
-                        employee.EmployeeId != bonus.EmployeeId)
-                        bonus.Employee = employee;
-
-                    BonusesRepository.Save(bonus);
+                    var employeeRepository = new EmployeesRepository(dbContext);
+                    employee = employeeRepository.GetById(bonusDto.EmployeeId);
                 }
-                Response.StatusCode = (int)HttpStatusCode.OK;
 
-            }
-            catch (Exception ex)
+            using (var dbContext = new DatabaseContext())
             {
-                Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                return Json(string.Format("{0} database updated bonus failed: {1}", ServerErrorMsg, ex.Message));
+                BonusesRepository = new BonusesRepository(dbContext);
+                BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
+                bonus.Comment = bonusDto.Comment;
+                bonus.Amount = bonusDto.Amount;
+                bonus.Date = bonusDto.Date;
+                bonus.IsActive = bonusDto.IsActive;
+
+                if (employee != null &&
+                    employee.EmployeeId != bonus.EmployeeId)
+                    bonus.Employee = employee;
+
+                BonusesRepository.Save(bonus);
             }
 
             return Json(employee);
-
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Web.App_Start
+﻿namespace Web
 {
     /// <summary>
     /// Class Authorization Config
