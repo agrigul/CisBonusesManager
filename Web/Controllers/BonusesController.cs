@@ -7,6 +7,7 @@ using Web.Filters;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
 using Web.Models.Employee;
+using Web.Models.Factories;
 using Web.Models.ValueObjects;
 
 namespace Web.Controllers
@@ -14,7 +15,7 @@ namespace Web.Controllers
     /// <summary>
     /// Class BonusesController
     /// </summary>
-    [System.Web.Mvc.Authorize]
+    [Authorize]
     [InitializeSimpleMembership]
     public class BonusesController : Controller
     {
@@ -87,7 +88,7 @@ namespace Web.Controllers
         public JsonResult GetJsonEmployeesByLastName()
         {
             IList<Employee> employees = new List<Employee>();
-            string lastName = FilterBuilder.FormFilterValue(Request.Params);
+            string lastName = FilterStringFactory.FormFilterValue(Request.Params);
 
 
             if (String.IsNullOrEmpty(lastName) == false)
@@ -144,20 +145,19 @@ namespace Web.Controllers
         [HttpPost]
         public JsonResult Edit(BonusDto bonusDto)
         {
-            Employee employee = null;
-
             if (bonusDto == null)
                 throw new ArgumentNullException("bonusDto can not be null in controller Edit");
 
-            if (bonusDto.EmployeeId != 0)
-                using (var dbContext = new DatabaseContext())
+            Employee employee = null;
+
+            using (var dbContext = new DatabaseContext())
+            {
+                if (bonusDto.EmployeeId != 0)
                 {
                     var employeeRepository = new EmployeesRepository(dbContext);
                     employee = employeeRepository.GetById(bonusDto.EmployeeId);
                 }
 
-            using (var dbContext = new DatabaseContext())
-            {
                 BonusesRepository = new BonusesRepository(dbContext);
                 BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
                 bonus.Comment = bonusDto.Comment;
@@ -167,7 +167,9 @@ namespace Web.Controllers
 
                 if (employee != null &&
                     employee.EmployeeId != bonus.EmployeeId)
+                {
                     bonus.Employee = employee;
+                }
 
                 BonusesRepository.Save(bonus);
             }

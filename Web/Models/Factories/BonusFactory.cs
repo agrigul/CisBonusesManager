@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Web;
 using Web.Infrastructure.Repository;
+using Web.Models.Bonuses;
 
-namespace Web.Models.Bonuses
+namespace Web.Models.Factories
 {
     /// <summary>
     /// Class BonusFactory

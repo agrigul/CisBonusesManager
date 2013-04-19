@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Specialized;
 
-namespace Web.Models.ValueObjects
+namespace Web.Models.Factories
 {
     /// <summary>
     /// Build different filter values depending on request params
     /// </summary>
-    public static class FilterBuilder
+    public static class FilterStringFactory
     {
         /// <summary>
         /// The greater or equal abriviation from UI
@@ -32,10 +32,10 @@ namespace Web.Models.ValueObjects
 
             string filterValue = requstParams["filter[filters][0][value]"];
 
-            if (!string.IsNullOrEmpty(filterField) && 
-                 filterField.Contains("Date"))
+            if (!string.IsNullOrEmpty(filterField) &&
+                 (filterField.Contains("Date") || filterField.Contains("Amount")))
             {
-                    filterValue = FormDateFilter(requstParams);
+                    filterValue = FormFilterString(requstParams);
             }
 
             return filterValue;
@@ -47,7 +47,7 @@ namespace Web.Models.ValueObjects
         /// <param name="requstParams">The requst params.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">FormFilterValue;requstParams can not be null</exception>
-        private static string FormDateFilter(NameValueCollection requstParams)
+        private static string FormFilterString(NameValueCollection requstParams)
         {
             if (requstParams == null)
                 throw new ArgumentNullException("FormFilterValue", "requstParams can not be null");
@@ -58,7 +58,7 @@ namespace Web.Models.ValueObjects
             string firstFilterValue = requstParams["filter[filters][0][value]"];
             string secondFilterValue = requstParams["filter[filters][1][value]"];
 
-            string finalFilterValue = "";
+            string finalFilterValue;
             if (firstOperator == GreaterOrEqual && secondOperator == LessOrEqual)
             {
                 finalFilterValue = string.Format("{0} ; {1}", firstFilterValue,
@@ -71,7 +71,7 @@ namespace Web.Models.ValueObjects
             }
             else
             {
-                finalFilterValue = FormDateWithOneParameter(secondFilterValue, 
+                finalFilterValue = FormFilterWithOneParameter(secondFilterValue, 
                                                             firstFilterValue, 
                                                             firstOperator, 
                                                             secondOperator);
@@ -80,7 +80,15 @@ namespace Web.Models.ValueObjects
             return finalFilterValue;
         }
 
-        private static string FormDateWithOneParameter(string secondFilterValue, string firstFilterValue, string firstOperator,
+        /// <summary>
+        /// Forms the date with one parameter.
+        /// </summary>
+        /// <param name="secondFilterValue">The second filter value.</param>
+        /// <param name="firstFilterValue">The first filter value.</param>
+        /// <param name="firstOperator">The first operator.</param>
+        /// <param name="secondOperator">The second operator.</param>
+        /// <returns></returns>
+        private static string FormFilterWithOneParameter(string secondFilterValue, string firstFilterValue, string firstOperator,
                                                        string secondOperator)
         {
             string finalFilterValue = "";
@@ -89,11 +97,13 @@ namespace Web.Models.ValueObjects
 
             if (firstOperator == GreaterOrEqual)
                 finalFilterValue = string.Format("{0} ; ", firstFilterValue);
+
             if (firstOperator == LessOrEqual)
                 finalFilterValue = string.Format(" ; {0} ", firstFilterValue);
 
             if (secondOperator == GreaterOrEqual)
                 finalFilterValue = string.Format("{0} ; ", secondFilterValue);
+
             if (secondOperator == LessOrEqual)
                 finalFilterValue = string.Format(" ; {0} ", secondFilterValue);
 

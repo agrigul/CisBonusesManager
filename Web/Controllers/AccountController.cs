@@ -63,8 +63,8 @@ namespace Web.Controllers
             {
                 SessionRepository.ClearUser();
             }
-            FormsAuthentication.SignOut();
 
+            FormsAuthentication.SignOut();
             return RedirectToAction("Login", "Account");
         }
 

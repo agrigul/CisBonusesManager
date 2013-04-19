@@ -174,10 +174,12 @@
     <Compile Include="Controllers\Attributes\AjaxErrorFilterAttribute.cs" />
     <Compile Include="Controllers\BonusesController.cs" />
     <Compile Include="Infrastructure\Repository\BonusesRepository.cs" />
+    <Compile Include="Models\Factories\BonusesSortingQueryBuilder.cs" />
+    <Compile Include="Models\Factories\BonusesFilterQueryBuilder.cs" />
     <Compile Include="Infrastructure\Repository\EmployeesRepository.cs" />
     <Compile Include="Infrastructure\Repository\SessionRepository.cs" />
     <Compile Include="Models\Bonuses\BonusDto.cs" />
-    <Compile Include="Models\Bonuses\BonusFactory.cs" />
+    <Compile Include="Models\Factories\BonusFactory.cs" />
     <Compile Include="Infrastructure\Repository\IRepository.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -189,7 +191,7 @@
     <Compile Include="Models\Employee\Employee.cs" />
     <Compile Include="Infrastructure\Repository\DatabaseContext.cs" />
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
-    <Compile Include="Models\ValueObjects\FilterBuilder.cs" />
+    <Compile Include="Models\Factories\FilterStringFactory.cs" />
     <Compile Include="Models\ValueObjects\FilteredRequest.cs" />
     <Compile Include="Models\ValueObjects\PagedResponse.cs" />
     <Compile Include="Models\ValueObjects\SortingDirection.cs" />
