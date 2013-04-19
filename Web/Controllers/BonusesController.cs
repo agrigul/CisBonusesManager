@@ -149,7 +149,7 @@ namespace Web.Controllers
                 throw new ArgumentNullException("bonusDto can not be null in controller Edit");
 
             Employee employee = null;
-
+            BonusAggregate bonus = null;
             using (var dbContext = new DatabaseContext())
             {
                 if (bonusDto.EmployeeId != 0)
@@ -159,7 +159,7 @@ namespace Web.Controllers
                 }
 
                 BonusesRepository = new BonusesRepository(dbContext);
-                BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
+                bonus = BonusesRepository.GetById(bonusDto.BonusId);
                 bonus.Comment = bonusDto.Comment;
                 bonus.Amount = bonusDto.Amount;
                 bonus.Date = bonusDto.Date;
@@ -174,7 +174,7 @@ namespace Web.Controllers
                 BonusesRepository.Save(bonus);
             }
 
-            return Json(employee);
+            return Json(bonus);
         }
     }
 }
