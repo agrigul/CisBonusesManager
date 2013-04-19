@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
 using Web.Models.Bonuses;
+using Web.Models.Employee;
 
 namespace Web.Infrastructure.Mapping
 {

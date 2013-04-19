@@ -9,9 +9,6 @@ namespace Web.Models.Bonuses
     /// </summary>
     public class BonusFactory
     {
-        public string login = "ryakh";
-        public string password = "1"; 
-
         /// <summary>
         /// Creates the specified employee.
         /// </summary>
@@ -21,7 +18,7 @@ namespace Web.Models.Bonuses
         /// <param name="comment">The comment.</param>
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
         /// <returns>BonusAggregate.</returns>
-        public BonusAggregate Create(Employee employee, 
+        public BonusAggregate Create(Employee.Employee employee, 
                                     DateTime date, 
                                     decimal amount, 
                                     string comment = "", 
@@ -42,9 +39,9 @@ namespace Web.Models.Bonuses
         public BonusAggregate Create(BonusDto bonusDto)
         {
             if (bonusDto == null)
-                throw new ArgumentNullException("Create", "Can not create new BonusAggregate from null DTO object");
+                throw new ArgumentNullException("Create", "can not create new BonusAggregate from null DTO object");
 
-            Employee employee;
+            Employee.Employee employee;
             using (var dbContext = new DatabaseContext())
             {
                 var repository = new EmployeesRepository(dbContext);

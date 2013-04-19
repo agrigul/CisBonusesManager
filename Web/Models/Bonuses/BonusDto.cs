@@ -8,7 +8,12 @@ namespace Web.Models.Bonuses
         /// Gets or sets the id.
         /// </summary>
         /// <value>The id.</value>
-        public int BonusId { get;  set; }
+
+        private int id;
+
+        public int BonusId { 
+            get { return id; }
+            set { id = value; } }
 
         /// <summary>
         /// Gets or sets the name of the employee.

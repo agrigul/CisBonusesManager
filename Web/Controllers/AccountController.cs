@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Transactions;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Security;
-using DotNetOpenAuth.AspNet;
-using Microsoft.Web.WebPages.OAuth;
-using Web.Filters;
 using Web.Infrastructure.Repository;
-using Web.Models;
-using WebMatrix.WebData;
+using Web.Models.ValueObjects;
 
 namespace Web.Controllers
 {
@@ -43,7 +35,6 @@ namespace Web.Controllers
         /// <returns>ActionResult.</returns>
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel user, string returnUrl)
         {
             if (ModelState.IsValid)
@@ -65,7 +56,6 @@ namespace Web.Controllers
         /// </summary>
         /// <returns>ActionResult.</returns>
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             // WebSecurity.Logout();

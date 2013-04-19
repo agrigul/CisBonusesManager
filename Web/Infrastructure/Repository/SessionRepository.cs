@@ -1,6 +1,7 @@
 ﻿using System.Dynamic;
 using System.Web;
 using Web.Models;
+using Web.Models.ValueObjects;
 
 // NOTE: source code from http://www.codeproject.com/Articles/191422/Accessing-ASP-NET-Session-Data-Using-Dynamics
 namespace Web.Infrastructure.Repository

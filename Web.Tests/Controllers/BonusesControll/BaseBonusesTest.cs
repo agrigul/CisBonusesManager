@@ -6,6 +6,8 @@ using Web.Controllers;
 using Web.Infrastructure.Repository;
 using Web.Models;
 using Web.Models.Bonuses;
+using Web.Models.Employee;
+using Web.Models.ValueObjects;
 
 namespace Web.Tests.Controllers.BonusesControll
 {

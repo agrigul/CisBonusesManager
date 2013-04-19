@@ -1,4 +1,4 @@
-namespace Web.Models.Bonuses
+namespace Web.Models.Employee
 {
     /// <summary>
     /// Class Employee. Represents an entity from vwEmployeeLookup
