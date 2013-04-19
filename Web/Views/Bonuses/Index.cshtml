@@ -70,8 +70,8 @@
                 // converts date to format of server
            function setFormattedFilterDate(filter) {
                     
-                    if(filter !== undefined) {
-                        if (filter.filters !== undefined || filter.filters !== "") {
+                    if(filter !== undefined && filter != null) {
+                        if (filter.filters !== undefined && filter.filters != null && filter.filters !== "") {
                             if (filter.filters[0] !== undefined) {
                                 if (filter.filters[0].field == "Date") {
                                     filter.filters[0].value = kendo.toString(filter.filters[0].value, dateFormat);
