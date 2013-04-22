@@ -27,9 +27,11 @@
        $(document).ready(function() {
           var dateFormat = "ddd MMM dd yyyy hh:mm:ss";
            
-          function showErrorMessage(e, b, c) {
+          function showErrorMessage(e) {
                     var errorMesage = e.xhr.responseText.replace(/(\\[a-z])+/, " "); // removes tags \r \n
                     errorMesage = errorMesage.replace(/[\s]{2,}/, " "); // removes spaces
+                    errorMesage = errorMesage.replace(/"|{|}/gi, ""); // removes " { }
+                    errorMesage = errorMesage.replace(':', ": "); // replaces :
 
                     if (errorMesage === undefined || errorMesage === -1 || errorMesage === "")
                         alert("Bad or empty error response message");

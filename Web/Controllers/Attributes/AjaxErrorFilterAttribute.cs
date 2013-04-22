@@ -27,10 +27,9 @@ namespace Web.Controllers.Attributes
                 string errorMessage;
 
                 // database throw ProviderIncompatibleException if user's credentials are wrong.
-                if (filterContext.Exception is ProviderIncompatibleException)
+                if (filterContext.Exception is EntityException)
                 {
-                    errorMessage = string.Format("Possible you have no permission to access database. {0}",
-                                                 filterContext.Exception.Message);
+                    errorMessage = string.Format("Possible you have no permission to access database or entered wrong logrin and password.");
                 }
                 else
                 {
