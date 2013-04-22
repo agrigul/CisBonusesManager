@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Web.Mvc;
 using Web.Controllers.Attributes;
 using Web.Filters;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
-using Web.Models.Employee;
+using Web.Models.Employees;
+using Web.Models.Factories;
 using Web.Models.ValueObjects;
 
 namespace Web.Controllers
 {
     /// <summary>
-    /// Class BonusesController
+    /// Class BonusesController recevies requests from grid and displays bobuses
     /// </summary>
-    [System.Web.Mvc.Authorize]
+    [Authorize]
     [InitializeSimpleMembership]
     public class BonusesController : Controller
     {
@@ -39,10 +39,8 @@ namespace Web.Controllers
             BonusesRepository = repository;
         }
 
-        // GET: /Bonuses/
-
         /// <summary>
-        /// Returns all bonuses
+        /// Returns a page with bonuses table
         /// </summary>
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
@@ -87,7 +85,7 @@ namespace Web.Controllers
         public JsonResult GetJsonEmployeesByLastName()
         {
             IList<Employee> employees = new List<Employee>();
-            string lastName = FilterBuilder.FormFilterValue(Request.Params);
+            string lastName = FilterStringFactory.FormFilterValue(Request.Params);
 
 
             if (String.IsNullOrEmpty(lastName) == false)
@@ -107,7 +105,7 @@ namespace Web.Controllers
         }
 
         /// <summary>
-        /// Creates the specified bonus.
+        /// Creates the specified bonus according to BonusDTO.
         /// </summary>
         /// <param name="bonusDto">The bonus DTO object.</param>
         /// <returns>Http status code result.</returns>
@@ -126,7 +124,9 @@ namespace Web.Controllers
             using (var dbContext = new DatabaseContext())
             {
                 BonusesRepository = new BonusesRepository(dbContext);
-                bonus = new BonusFactory().Create(bonusDto);
+                var employeeRepository = new EmployeesRepository(dbContext);
+                bonus = new BonusFactory(employeeRepository).Create(bonusDto);
+
                 BonusesRepository.Save(bonus);
             }
 
@@ -144,22 +144,21 @@ namespace Web.Controllers
         [HttpPost]
         public JsonResult Edit(BonusDto bonusDto)
         {
-            Employee employee = null;
-
             if (bonusDto == null)
                 throw new ArgumentNullException("bonusDto can not be null in controller Edit");
 
-            if (bonusDto.EmployeeId != 0)
-                using (var dbContext = new DatabaseContext())
+            Employee employee = null;
+            BonusAggregate bonus = null;
+            using (var dbContext = new DatabaseContext())
+            {
+                if (bonusDto.EmployeeId != 0)
                 {
                     var employeeRepository = new EmployeesRepository(dbContext);
                     employee = employeeRepository.GetById(bonusDto.EmployeeId);
                 }
 
-            using (var dbContext = new DatabaseContext())
-            {
                 BonusesRepository = new BonusesRepository(dbContext);
-                BonusAggregate bonus = BonusesRepository.GetById(bonusDto.BonusId);
+                bonus = BonusesRepository.GetById(bonusDto.BonusId);
                 bonus.Comment = bonusDto.Comment;
                 bonus.Amount = bonusDto.Amount;
                 bonus.Date = bonusDto.Date;
@@ -167,12 +166,14 @@ namespace Web.Controllers
 
                 if (employee != null &&
                     employee.EmployeeId != bonus.EmployeeId)
+                {
                     bonus.Employee = employee;
+                }
 
                 BonusesRepository.Save(bonus);
             }
 
-            return Json(employee);
+            return Json(bonus);
         }
     }
 }

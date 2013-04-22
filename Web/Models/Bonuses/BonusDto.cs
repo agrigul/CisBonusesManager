@@ -2,18 +2,16 @@
 
 namespace Web.Models.Bonuses
 {
+    /// <summary>
+    /// Tranport entity for correct convertation of bonues from UI to aggregate
+    /// </summary>
     public class BonusDto
     {
         /// <summary>
         /// Gets or sets the id.
         /// </summary>
         /// <value>The id.</value>
-
-        private int id;
-
-        public int BonusId { 
-            get { return id; }
-            set { id = value; } }
+        public int BonusId { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the employee.
@@ -71,24 +69,5 @@ namespace Web.Models.Bonuses
             //this constructor is for EF use only
         }
 
-        /// <summary>
-        /// Serializes the specified bonus.
-        /// </summary>
-        /// <param name="bonus">The bonus.</param>
-        /// <returns>BonusDto.</returns>
-        public static BonusDto Serialize(BonusAggregate bonus)
-        {
-            return new BonusDto
-                       {
-                           BonusId = bonus.BonusId,
-                           EmployeeId = bonus.EmployeeId,
-                           Amount = bonus.Amount,
-                           Comment = bonus.Comment,
-                           Date = bonus.Date,
-                           IsActive = bonus.IsActive,
-                           Dlc = bonus.Dlc,
-                           Ulc = bonus.Ulc
-                       };
-        }
     }
 }

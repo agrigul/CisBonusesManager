@@ -70,8 +70,8 @@
                 // converts date to format of server
            function setFormattedFilterDate(filter) {
                     
-                    if(filter !== undefined) {
-                        if (filter.filters !== undefined || filter.filters !== "") {
+                    if(filter !== undefined && filter != null) {
+                        if (filter.filters !== undefined && filter.filters != null && filter.filters !== "") {
                             if (filter.filters[0] !== undefined) {
                                 if (filter.filters[0].field == "Date") {
                                     filter.filters[0].value = kendo.toString(filter.filters[0].value, dateFormat);
@@ -116,7 +116,7 @@
                                 LastName: {
                                     type: "string",
                                     editable: true,
-                                    validation: { required: {message: "2 Employee's last name is required"}}
+                                    validation: { required: {message: "Employee's last name is required"}}
                                 },
                             }
                         }
@@ -270,9 +270,15 @@
                             title: "Amount",
                             width: 95,
                             filterable: {
+                                extra: true,
+                                messages: {
+                                    and : "And",
+                                    or: ""
+                                },
                                 operators: {
                                     number: {
-                                        eq: "Is eqaul to"
+                                        gte: "from",
+                                        lte: "to"
                                     }
                                 }
                             }

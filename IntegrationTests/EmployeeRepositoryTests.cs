@@ -3,8 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Web.Infrastructure.Repository;
-using Web.Models.Bonuses;
-using Web.Models.Employee;
+using Web.Models.Employees;
 
 
 namespace IntegrationTests

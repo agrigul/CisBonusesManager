@@ -5,7 +5,7 @@ using Web.Models.Bonuses;
 namespace Web.Infrastructure.Mapping
 {
     /// <summary>
-    /// mapping class to BonusAggregate entity to database
+    /// mapping class of BonusAggregate entity to database
     /// </summary>
     public class BonusMapping : EntityTypeConfiguration<BonusAggregate>
     {
@@ -14,17 +14,14 @@ namespace Web.Infrastructure.Mapping
         /// </summary>
         public BonusMapping()
         {
-            ToTable("CompDev.vwBonuses"); // TODO: uncomment this line for real database
-            //ToTable("vwBonuses");
+            ToTable("CompDev.vwBonuses");
+            //ToTable("vwBonuses");// NOTE: uncomment this line for local database testgs
 
             HasKey(x => x.BonusId);
             Property(x => x.BonusId)
                 .HasColumnName("Id")
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            //            HasRequired(x => x.Employee)
-            //                      .WithMany()
-            //                      .HasForeignKey(x => x.EmployeeId);
             Property(x => x.EmployeeId); // link to another view
             Property(x => x.Date);
             Property(x => x.Amount);

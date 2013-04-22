@@ -5,7 +5,7 @@ using System.Web.Mvc;
 namespace Web.Controllers.Attributes
 {
     /// <summary>
-    /// Fitler to catch all exception from business logic layer and send formatted json results
+    /// Fitler catches all exception from business logic layer and send formatted json results
     /// </summary>
     public class AjaxErrorFilterAttribute : HandleErrorAttribute
     {
@@ -19,11 +19,14 @@ namespace Web.Controllers.Attributes
 
             if (filterContext.HttpContext.Request.IsAjaxRequest() && filterContext.Exception != null)
             {
-                filterContext.HttpContext.Response.TrySkipIisCustomErrors = false; // supress IIS 500 error page.
+                // supress IIS to replace custom error 500 with it's error page .
+                filterContext.HttpContext.Response.TrySkipIisCustomErrors = false; 
                 filterContext.HttpContext.Response.AddHeader("Content-Type", "application/json");
                 filterContext.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                 string errorMessage;
+
+                // database throw ProviderIncompatibleException if user's credentials are wrong.
                 if (filterContext.Exception is ProviderIncompatibleException)
                 {
                     errorMessage = string.Format("Possible you have no permission to access database. {0}",

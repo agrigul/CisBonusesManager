@@ -1,9 +1,10 @@
 ﻿using System;
+using Web.Models.Employees;
 
 namespace Web.Models.Bonuses
 {
     /// <summary>
-    /// Class BonusAggregate. Represents an entity from vwBonuses
+    /// Class BonusAggregate. Represents an entity from vwBonuses of a bonus
     /// </summary>
     public class BonusAggregate
     {
@@ -22,13 +23,13 @@ namespace Web.Models.Bonuses
         /// <summary>
         /// The employee
         /// </summary>
-        private Employee.Employee employee;
+        private Employee employee;
 
         /// <summary>
         /// Gets or sets the employee.
         /// </summary>
         /// <value>The employee.</value>
-        public Employee.Employee Employee
+        public Employee Employee
         {
             get { return employee; }
             set
@@ -124,7 +125,8 @@ namespace Web.Models.Bonuses
         /// <param name="amount">The amount.</param>
         /// <param name="comment">The comment.</param>
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
-        internal BonusAggregate(Employee.Employee employee,
+        /// <param name="bonusId">id of a bonus</param>
+        internal BonusAggregate(Employee employee,
                                 DateTime date,
                                 decimal amount,
                                 string comment,
@@ -134,22 +136,6 @@ namespace Web.Models.Bonuses
             if (employee == null)
                 throw new ArgumentNullException("Bonus", "Employee can not be null to create bonus instance");
             Employee = employee;
-
-            SetBonusProperties(date, amount, comment, isActive, bonusId);
-        }
-
-
-
-        /// <summary>
-        /// Sets the bonus properties.
-        /// </summary>
-        /// <param name="date">The date.</param>
-        /// <param name="amount">The amount.</param>
-        /// <param name="comment">The comment.</param>
-        /// <param name="isActive">if set to <c>true</c> [is active].</param>
-        /// <param name="bonusId">The bonus id.</param>
-        private void SetBonusProperties(DateTime date, decimal amount, string comment, bool isActive, int bonusId)
-        {
             BonusId = bonusId;
             Date = date;
             Amount = amount;

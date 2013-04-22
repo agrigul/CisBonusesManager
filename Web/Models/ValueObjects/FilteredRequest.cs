@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Linq;
+using Web.Models.Factories;
 
 namespace Web.Models.ValueObjects
 {
@@ -99,7 +100,7 @@ namespace Web.Models.ValueObjects
             if (itemIsInRequest == null) return;
 
             FilterField = requestParams["filter[filters][0][field]"];
-            FilterPattern = FilterBuilder.FormFilterValue(requestParams, FilterField);
+            FilterPattern = FilterStringFactory.FormFilterValue(requestParams, FilterField);
         }
     }
 }
