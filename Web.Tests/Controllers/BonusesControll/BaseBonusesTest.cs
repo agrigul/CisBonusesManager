@@ -4,9 +4,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Web.Controllers;
 using Web.Infrastructure.Repository;
-using Web.Models;
 using Web.Models.Bonuses;
-using Web.Models.Employee;
+using Web.Models.Employees;
 using Web.Models.Factories;
 using Web.Models.ValueObjects;
 
@@ -23,12 +22,13 @@ namespace Web.Tests.Controllers.BonusesControll
         /// The mocked repository of bonuses
         /// </summary>
         protected Mock<IRepository<BonusAggregate>> RepositoryMock;
+        protected Mock<IRepository<Employee>> EmployeeRepositoryMock;
         protected Mock<IRepository<BonusAggregate>> RepositoryWithExceptionMock;
 
         /// <summary>
         /// The prepared bonuses for test
         /// </summary>
-        protected static readonly PagedResponse<BonusAggregate> PreparedBonusesForTest = CreateMockBonuses();
+        protected PagedResponse<BonusAggregate> PreparedBonusesForTest;
 
         /// <summary>
         /// The controller
@@ -41,14 +41,19 @@ namespace Web.Tests.Controllers.BonusesControll
         [TestInitialize]
         public void TestInitilalization()
         {
-            RepositoryMock = new Mock<IRepository<BonusAggregate>>();
+            PreparedBonusesForTest = CreateMockBonuses();
             
+            EmployeeRepositoryMock = new Mock<IRepository<Employee>>();
+            EmployeeRepositoryMock.Setup(x => x.GetById(It.IsAny<int>()))
+                                      .Returns(new Employee("name1", "lastname1", "ukr1")); ;
+
+            RepositoryMock = new Mock<IRepository<BonusAggregate>>();
             RepositoryMock.Setup(x => x.FindAll(0, 2,
                                                 It.IsAny<string>(),
                                                 SortingDirection.Desc,
                                                 It.IsAny<string>(), 
                                                 It.IsAny<string>()))
-                                               .Returns(PreparedBonusesForTest);
+                                       .Returns(PreparedBonusesForTest);
 
 
             RepositoryWithExceptionMock = new Mock<IRepository<BonusAggregate>>();
@@ -57,14 +62,14 @@ namespace Web.Tests.Controllers.BonusesControll
                                                 SortingDirection.Desc,
                                                 It.IsAny<string>(), 
                                                 It.IsAny<string>()))
-                                            .Throws<ArgumentOutOfRangeException>();
+                                        .Throws<ArgumentOutOfRangeException>();
 
             RepositoryWithExceptionMock.Setup(x => x.FindAll(It.IsAny<int>(), 0,
                                                 It.IsAny<string>(),
                                                 SortingDirection.Desc,
                                                 It.IsAny<string>(), 
                                                 It.IsAny<string>()))
-                .Returns(() => new PagedResponse<BonusAggregate>(null, 0));
+                                       .Returns(() => new PagedResponse<BonusAggregate>(null, 0));
         }
 
         /// <summary>
@@ -79,9 +84,9 @@ namespace Web.Tests.Controllers.BonusesControll
         /// <summary>
         /// Creates the bonuses mock.
         /// </summary>
-        private static PagedResponse<BonusAggregate> CreateMockBonuses()
+        private  PagedResponse<BonusAggregate> CreateMockBonuses()
         {
-            var factory = new BonusFactory();
+            var factory = new BonusFactory(EmployeeRepositoryMock.Object);
             var bonuses = new List<BonusAggregate>
                                     {
                                         factory.Create(new Employee("name1", "lastname1", "ukr1"), DateTime.Now, 100),

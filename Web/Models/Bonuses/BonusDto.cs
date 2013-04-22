@@ -69,24 +69,5 @@ namespace Web.Models.Bonuses
             //this constructor is for EF use only
         }
 
-        /// <summary>
-        /// Serializes the specified bonus.
-        /// </summary>
-        /// <param name="bonus">The bonus.</param>
-        /// <returns>BonusDto.</returns>
-        public static BonusDto Serialize(BonusAggregate bonus)
-        {
-            return new BonusDto
-                       {
-                           BonusId = bonus.BonusId,
-                           EmployeeId = bonus.EmployeeId,
-                           Amount = bonus.Amount,
-                           Comment = bonus.Comment,
-                           Date = bonus.Date,
-                           IsActive = bonus.IsActive,
-                           Dlc = bonus.Dlc,
-                           Ulc = bonus.Ulc
-                       };
-        }
     }
 }

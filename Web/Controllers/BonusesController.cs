@@ -5,7 +5,7 @@ using Web.Controllers.Attributes;
 using Web.Filters;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
-using Web.Models.Employee;
+using Web.Models.Employees;
 using Web.Models.Factories;
 using Web.Models.ValueObjects;
 
@@ -39,10 +39,8 @@ namespace Web.Controllers
             BonusesRepository = repository;
         }
 
-        // GET: /Bonuses/
-
         /// <summary>
-        /// Returns all bonuses
+        /// Returns a page with bonuses table
         /// </summary>
         /// <returns>ActionResult.</returns>
         public ActionResult Index()
@@ -126,7 +124,9 @@ namespace Web.Controllers
             using (var dbContext = new DatabaseContext())
             {
                 BonusesRepository = new BonusesRepository(dbContext);
-                bonus = new BonusFactory().Create(bonusDto);
+                var employeeRepository = new EmployeesRepository(dbContext);
+                bonus = new BonusFactory(employeeRepository).Create(bonusDto);
+
                 BonusesRepository.Save(bonus);
             }
 

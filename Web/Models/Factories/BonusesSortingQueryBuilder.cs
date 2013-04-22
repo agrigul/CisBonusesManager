@@ -11,11 +11,11 @@ namespace Web.Models.Factories
     {
 
         /// <summary>
-        /// Sets the sorting settings.
+        /// Adds sorting to query according to parameters from UI
         /// </summary>
         /// <param name="sortField">The sort field.</param>
         /// <param name="sortDirection">The sort direction.</param>
-        /// <param name="query">The query.</param>
+        /// <param name="query">The query to change.</param>
         /// <returns>IQueryable{BonusAggregate}.</returns>
         public IQueryable<BonusAggregate> BuildQuery(string sortField, SortingDirection sortDirection, IQueryable<BonusAggregate> query)
         {

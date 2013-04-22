@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Data.Entity;
 using Web.Infrastructure.Mapping;
-using Web.Models;
 using Web.Models.Bonuses;
-using Web.Models.Employee;
+using Web.Models.Employees;
 using Web.Models.ValueObjects;
 
 namespace Web.Infrastructure.Repository
@@ -14,7 +13,7 @@ namespace Web.Infrastructure.Repository
     public class DatabaseContext : DbContext
     {
         /// <summary>
-        /// The name connection to database
+        /// The connection name to database
         /// </summary>
         private const string ConnectionStringName = "BonusesDbContext";
 
@@ -39,7 +38,7 @@ namespace Web.Infrastructure.Repository
             Database.SetInitializer<DatabaseContext>(null); // without creating new database
 
             var user = SessionRepository.CurrentSession.UserCredentials as LoginModel;
-            //TODO: delete hardcode below
+            
             if(user == null)
                 throw new ArgumentNullException("DatabaseContext", "UserCredentials object can not be null");
 

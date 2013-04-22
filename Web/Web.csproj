@@ -188,7 +188,7 @@
     <Compile Include="Infrastructure\Mapping\EmployeeMapping.cs" />
     <Compile Include="Models\ValueObjects\AccountModels.cs" />
     <Compile Include="Models\Bonuses\BonusAggregate.cs" />
-    <Compile Include="Models\Employee\Employee.cs" />
+    <Compile Include="Models\Employees\Employee.cs" />
     <Compile Include="Infrastructure\Repository\DatabaseContext.cs" />
     <Compile Include="Infrastructure\Mapping\BonusMapping.cs" />
     <Compile Include="Models\Factories\FilterStringFactory.cs" />

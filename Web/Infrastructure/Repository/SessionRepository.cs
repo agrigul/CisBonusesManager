@@ -10,10 +10,11 @@ namespace Web.Infrastructure.Repository
     /// </summary>
     public sealed class SessionRepository : DynamicObject
     {
+        /// <summary>
+        /// Prevents a default instance of the <see cref="SessionRepository"/> class from being created.
+        /// </summary>
         private SessionRepository() { }
-
-        private static readonly object syncObject = new object();
-
+        
         /// <summary>
         /// The repository
         /// </summary>
@@ -60,11 +61,7 @@ namespace Web.Infrastructure.Repository
         /// </returns>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            lock (syncObject)
-            {
-                result = Session[binder.Name];
-            }
-
+            result = Session[binder.Name];
             return true;
         }
 
@@ -78,10 +75,7 @@ namespace Web.Infrastructure.Repository
         /// </returns>
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            lock (syncObject)
-            {
-                Session[binder.Name] = value;
-            }
+            Session[binder.Name] = value;
             return true;
         }
 
@@ -91,11 +85,7 @@ namespace Web.Infrastructure.Repository
         /// <returns></returns>
         public static LoginModel GetUserCredentials()
         {
-            LoginModel user;
-            lock (syncObject)
-            {
-                user = CurrentSession.UserCredentials as LoginModel;
-            }
+            var user = CurrentSession.UserCredentials as LoginModel;
             return user;
         }
 
@@ -106,11 +96,7 @@ namespace Web.Infrastructure.Repository
         /// <param name="user">The user.</param>
         public static void SetUserCredentials(LoginModel user)
         {
-            lock (syncObject)
-            {
-                CurrentSession.UserCredentials = user;
-            }
-
+            CurrentSession.UserCredentials = user;
         }
 
         /// <summary>
@@ -119,10 +105,7 @@ namespace Web.Infrastructure.Repository
         public static void ClearUser()
         {
             if (CurrentSession != null)
-            lock (syncObject)
-            {
                 CurrentSession.UserCredentials = null;
-            }
         }
     }
 }

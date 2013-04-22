@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.ModelConfiguration;
-using Web.Models.Bonuses;
-using Web.Models.Employee;
+using Web.Models.Employees;
 
 namespace Web.Infrastructure.Mapping
 {
     /// <summary>
-    /// Mapping class of  Employee entity to database
+    /// Mapping class of Employee entity to database
     /// </summary>
     public class EmployeeMapping : EntityTypeConfiguration<Employee>
     {

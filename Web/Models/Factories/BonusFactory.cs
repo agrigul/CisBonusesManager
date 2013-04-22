@@ -1,6 +1,7 @@
 ﻿using System;
 using Web.Infrastructure.Repository;
 using Web.Models.Bonuses;
+using Web.Models.Employees;
 
 namespace Web.Models.Factories
 {
@@ -10,6 +11,24 @@ namespace Web.Models.Factories
     public class BonusFactory
     {
         /// <summary>
+        /// The employees repository
+        /// </summary>
+        private IRepository<Employee> EmployeesRepository { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BonusFactory"/> class.
+        /// </summary>
+        /// <param name="employeesRepository">The employees repository.</param>
+        /// <exception cref="System.ArgumentNullException">employeesRepository</exception>
+        public BonusFactory(IRepository<Employee>  employeesRepository)
+        {
+            if(employeesRepository == null)
+                throw new ArgumentNullException("BonusFactory", "Employees repository cann not be null");
+
+            EmployeesRepository = employeesRepository;
+
+        }
+        /// <summary>
         /// Creates the specified employee.
         /// </summary>
         /// <param name="employee">The employee.</param>
@@ -18,7 +37,7 @@ namespace Web.Models.Factories
         /// <param name="comment">The comment.</param>
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
         /// <returns>BonusAggregate.</returns>
-        public BonusAggregate Create(Employee.Employee employee, 
+        public BonusAggregate Create(Employee employee, 
                                     DateTime date, 
                                     decimal amount, 
                                     string comment = "", 
@@ -41,12 +60,8 @@ namespace Web.Models.Factories
             if (bonusDto == null)
                 throw new ArgumentNullException("Create", "can not create new BonusAggregate from null DTO object");
 
-            Employee.Employee employee;
-            using (var dbContext = new DatabaseContext())
-            {
-                var repository = new EmployeesRepository(dbContext);
-                employee = repository.GetById(bonusDto.EmployeeId);
-            }
+            Employee employee = EmployeesRepository.GetById(bonusDto.EmployeeId);
+            
             
             return new BonusAggregate(employee, 
                                         bonusDto.Date, 

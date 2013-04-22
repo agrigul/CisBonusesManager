@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using Web.Models;
-using Web.Models.Bonuses;
-using Web.Models.Employee;
+using Web.Models.Employees;
 using Web.Models.ValueObjects;
 
 namespace Web.Infrastructure.Repository
@@ -17,7 +15,7 @@ namespace Web.Infrastructure.Repository
         /// <summary>
         /// The context of database
         /// </summary>
-        private DatabaseContext dbContext;
+        private readonly DatabaseContext dbContext;
 
         /// <summary>
         /// Gets the db set.

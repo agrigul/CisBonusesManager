@@ -22,11 +22,11 @@ namespace Web.Models.Factories
         private const string DateRegExpPattern = @"[A-Za-z0-9 ]+ [\d]{2}:[\d]{2}:[\d]{2}";
         
         /// <summary>
-        /// Sets the filtering.
+        /// Sets the filtering according to parameters from UI.
         /// </summary>
-        /// <param name="filterField">The filter field.</param>
+        /// <param name="filterField">The filter field name.</param>
         /// <param name="filterValue">The filter value.</param>
-        /// <param name="query">The query.</param>
+        /// <param name="query">The query with changes.</param>
         /// <returns>IQueryable{BonusAggregate}.</returns>
         public IQueryable<BonusAggregate> BuildFilter(string filterField, string filterValue, IQueryable<BonusAggregate> query)
         {
@@ -41,9 +41,6 @@ namespace Web.Models.Factories
                     break;
 
                 case "Amount":
-//                    decimal amountValue = decimal.Parse(filterValue, CultureInfo.CreateSpecificCulture("en-GB"));
-//                    query = query.Where(x => x.Amount == amountValue);
-
                     query = FormQueryWithAmountFiltration(filterValue, query);
                     break;
 

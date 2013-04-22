@@ -38,7 +38,6 @@ namespace Web.Controllers
         public ActionResult Login(LoginModel user, string returnUrl)
         {
             if (ModelState.IsValid)
-                //&& WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
             {
                 SessionRepository.SetUserCredentials(user);
                 FormsAuthentication.SetAuthCookie(user.UserName, user.RememberMe);
@@ -48,9 +47,7 @@ namespace Web.Controllers
             ModelState.AddModelError(string.Empty, "The user name or password provided is incorrect.");
             return View(user);
         }
-
-        // POST: /Account/LogOff
-
+        
         /// <summary>
         /// Logs the off.
         /// </summary>
@@ -58,7 +55,6 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult LogOff()
         {
-            // WebSecurity.Logout();
             if (SessionRepository.GetUserCredentials() != null)
             {
                 SessionRepository.ClearUser();
