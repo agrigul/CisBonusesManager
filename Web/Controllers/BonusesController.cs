@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Web.Mvc;
 using Web.Controllers.Attributes;
 using Web.Filters;
@@ -13,7 +12,7 @@ using Web.Models.ValueObjects;
 namespace Web.Controllers
 {
     /// <summary>
-    /// Class BonusesController
+    /// Class BonusesController recevies requests from grid and displays bobuses
     /// </summary>
     [Authorize]
     [InitializeSimpleMembership]
@@ -108,7 +107,7 @@ namespace Web.Controllers
         }
 
         /// <summary>
-        /// Creates the specified bonus.
+        /// Creates the specified bonus according to BonusDTO.
         /// </summary>
         /// <param name="bonusDto">The bonus DTO object.</param>
         /// <returns>Http status code result.</returns>
