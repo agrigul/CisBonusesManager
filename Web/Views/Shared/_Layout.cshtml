@@ -5,12 +5,34 @@
     <title>@ViewBag.Title - Bonuses manager</title>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <meta name="viewport" content="width=device-width" />
+@*    @Styles.Render("~/Content/css")*@
+@*    @Styles.Render("~/Content/kendo/2013.1.319/css")*@
+@*    @Scripts.Render("~/bundles/jquery")*@
+@*    @Scripts.Render("~/bundles/modernizr")*@
+@*    $1$ kendo ui#1#*@
+@*    @Scripts.Render("~/bundles/kendo")*@
+@*    *@
+
+
     @Styles.Render("~/Content/css")
-    @Styles.Render("~/Content/kendo/2013.1.319/css")
+    @Styles.Render("~/Content/kendo/2013.1.319/kendo.common.min.css")
+    @Styles.Render("~/Content/kendo/2013.1.319/kendo.default.min.css")
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/modernizr")
     @* kendo ui*@
     @Scripts.Render("~/bundles/kendo")
+    
+    
+        
+    <!-- Common Kendo UI Web CSS -->
+    <link href="~/Content/kendo/2013.1.319/kendo.common.min.css" rel="stylesheet" />
+    <!-- Default Kendo UI Web theme CSS -->
+    <link href="~/Content/kendo/2013.1.319/kendo.default.min.css" rel="stylesheet" />
+    <!-- jQuery JavaScript -->
+    <script src="~/Scripts/jquery-1.9.1.min.js"></script>
+    <!-- Kendo UI Web combined JavaScript -->
+    <script src="~/Scripts/kendo/2013.1.319/kendo.web.min.js"></script>
+
 </head>
 <body>
     <header>

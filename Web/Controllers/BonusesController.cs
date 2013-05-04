@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
 using System.Web.Mvc;
 using Web.Controllers.Attributes;
 using Web.Filters;
@@ -130,6 +132,10 @@ namespace Web.Controllers
                 BonusesRepository.Save(bonus);
             }
 
+
+            // null or void throws exception in Jquery 1.9 as invalid result and 
+            // return of bonus as a result duplicates records.
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
             return Json(bonus);
         }
 
