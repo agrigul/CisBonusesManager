@@ -118,7 +118,7 @@ namespace Web.Models.Bonuses
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BonusAggregate"/> class.
+        /// Initializes a new instance of the <see cref="BonusAggregate" /> class.
         /// </summary>
         /// <param name="employee">The employee.</param>
         /// <param name="date">The date.</param>
@@ -126,12 +126,17 @@ namespace Web.Models.Bonuses
         /// <param name="comment">The comment.</param>
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
         /// <param name="bonusId">id of a bonus</param>
+        /// <param name="ulc">The ulc.</param>
+        /// <param name="dlc">The DLC.</param>
+        /// <exception cref="System.ArgumentNullException">Bonus;Employee can not be null to create bonus instance</exception>
         internal BonusAggregate(Employee employee,
                                 DateTime date,
                                 decimal amount,
                                 string comment,
                                 bool isActive,
-                                int bonusId)
+                                int bonusId,
+                                string ulc,
+                                DateTime dlc)
         {
             if (employee == null)
                 throw new ArgumentNullException("Bonus", "Employee can not be null to create bonus instance");
@@ -141,7 +146,8 @@ namespace Web.Models.Bonuses
             Amount = amount;
             Comment = comment;
             IsActive = isActive;
-            Ulc = "";
+            Ulc = ulc;
+            Dlc = dlc;
         }
     }
 }

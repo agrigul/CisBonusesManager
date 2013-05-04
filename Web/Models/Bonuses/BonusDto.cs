@@ -53,13 +53,13 @@ namespace Web.Models.Bonuses
         /// Gets or sets the ulc. Max length is 20
         /// </summary>
         /// <value>The ulc.</value>
-        public string Ulc { get; private set; }
+        public string Ulc { get; set; }
 
         /// <summary>
         /// Gets or sets the DLC.
         /// </summary>
         /// <value>The DLC.</value>
-        public DateTime Dlc { get; private set; }
+        public DateTime Dlc { get;  set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BonusAggregate"/> class.

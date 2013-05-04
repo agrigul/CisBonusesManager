@@ -36,14 +36,20 @@ namespace Web.Models.Factories
         /// <param name="amount">The amount.</param>
         /// <param name="comment">The comment.</param>
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
-        /// <returns>BonusAggregate.</returns>
+        /// <param name="ulc">The ulc.</param>
+        /// <param name="dlc">The DLC.</param>
+        /// <returns>
+        /// BonusAggregate.
+        /// </returns>
         public BonusAggregate Create(Employee employee, 
                                     DateTime date, 
                                     decimal amount, 
-                                    string comment = "", 
-                                    bool isActive = false)
+                                    string comment, 
+                                    bool isActive,
+                                    string ulc,
+                                    DateTime dlc)
         {
-            return new BonusAggregate(employee, date, amount, comment, isActive, 0);
+            return new BonusAggregate(employee, date, amount, comment, isActive, 0, ulc, dlc);
         }
 
 
@@ -68,7 +74,9 @@ namespace Web.Models.Factories
                                         bonusDto.Amount, 
                                         bonusDto.Comment, 
                                         bonusDto.IsActive, 
-                                        bonusDto.BonusId);
+                                        bonusDto.BonusId,
+                                        bonusDto.Ulc,
+                                        bonusDto.Dlc);
         }
     }
 }

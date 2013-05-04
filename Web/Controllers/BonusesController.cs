@@ -116,12 +116,14 @@ namespace Web.Controllers
         public JsonResult Create(BonusDto bonusDto)
         {
             BonusAggregate bonus;
-
+            
             if (bonusDto.Amount <= 0)
                 throw new ArgumentOutOfRangeException("Amount should be more than 0");
 
             if (bonusDto.EmployeeId <= 0)
                 throw new ArgumentNullException("You should specify an existing employee");
+
+            SetDlcAndUlc(bonusDto);
 
             using (var dbContext = new DatabaseContext())
             {
@@ -139,6 +141,21 @@ namespace Web.Controllers
             return Json(bonus);
         }
 
+        /// <summary>
+        /// Sets the default values for DLC and Ulc.
+        /// </summary>
+        /// <param name="bonusDto">The bonus dto.</param>
+        private static void SetDlcAndUlc(BonusDto bonusDto)
+        {
+            if (bonusDto == null)
+                throw new ArgumentNullException("BonusDto is null in SetDlcAndUlc method");
+            
+            if (string.IsNullOrEmpty(bonusDto.Ulc.Trim()))
+                bonusDto.Ulc = SessionRepository.GetUserCredentials().UserName;
+
+            if (bonusDto.Dlc == DateTime.MinValue)
+                bonusDto.Dlc = DateTime.Now;
+        }
 
 
         /// <summary>
@@ -153,8 +170,10 @@ namespace Web.Controllers
             if (bonusDto == null)
                 throw new ArgumentNullException("bonusDto can not be null in controller Edit");
 
+            SetDlcAndUlc(bonusDto);
+
             Employee employee = null;
-            BonusAggregate bonus = null;
+            BonusAggregate bonus;
             using (var dbContext = new DatabaseContext())
             {
                 if (bonusDto.EmployeeId != 0)

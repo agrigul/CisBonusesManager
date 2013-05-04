@@ -89,8 +89,8 @@ namespace Web.Tests.Controllers.BonusesControll
             var factory = new BonusFactory(EmployeeRepositoryMock.Object);
             var bonuses = new List<BonusAggregate>
                                     {
-                                        factory.Create(new Employee("name1", "lastname1", "ukr1"), DateTime.Now, 100),
-                                        factory.Create(new Employee("name2", "lastname2", "ukr2"), DateTime.Now, 200)
+                                        factory.Create(new Employee("name1", "lastname1", "ukr1"), DateTime.Now, 100,"", false,"test", DateTime.Now),
+                                        factory.Create(new Employee("name2", "lastname2", "ukr2"), DateTime.Now, 200,"", false,"test", DateTime.Now)
                                     };
 
             return new PagedResponse<BonusAggregate>(bonuses, 2);

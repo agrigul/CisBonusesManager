@@ -208,8 +208,8 @@ namespace IntegrationTests
                 bonusFactory = new BonusFactory(new EmployeesRepository(dbContext));
                 var bonusesList = new List<BonusAggregate> 
                                         { 
-                                          bonusFactory.Create(GetEmployeeById(4), DateTime.Now, 100), 
-                                          bonusFactory.Create(GetEmployeeById(5), DateTime.Now, 90)
+                                          bonusFactory.Create(GetEmployeeById(4), DateTime.Now, 100, "", false, "test", DateTime.Now), 
+                                          bonusFactory.Create(GetEmployeeById(5), DateTime.Now, 90,"", false, "test", DateTime.Now)
                                         };
 
                 bonusRepository = new BonusesRepository(dbContext);
