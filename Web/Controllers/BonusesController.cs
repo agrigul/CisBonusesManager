@@ -140,24 +140,7 @@ namespace Web.Controllers
             HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
             return Json(bonus);
         }
-
-        /// <summary>
-        /// Sets the default values for DLC and Ulc.
-        /// </summary>
-        /// <param name="bonusDto">The bonus dto.</param>
-        private static void SetDlcAndUlc(BonusDto bonusDto)
-        {
-            if (bonusDto == null)
-                throw new ArgumentNullException("BonusDto is null in SetDlcAndUlc method");
-            
-            if (string.IsNullOrEmpty(bonusDto.Ulc.Trim()))
-                bonusDto.Ulc = SessionRepository.GetUserCredentials().UserName;
-
-            if (bonusDto.Dlc == DateTime.MinValue)
-                bonusDto.Dlc = DateTime.Now;
-        }
-
-
+        
         /// <summary>
         /// Edits the specified BonusAggregate.
         /// </summary>
@@ -199,6 +182,23 @@ namespace Web.Controllers
             }
 
             return Json(bonus);
+        }
+
+
+        /// <summary>
+        /// Sets the default values for DLC and Ulc.
+        /// </summary>
+        /// <param name="bonusDto">The bonus dto.</param>
+        private static void SetDlcAndUlc(BonusDto bonusDto)
+        {
+            if (bonusDto == null)
+                throw new ArgumentNullException("BonusDto is null in SetDlcAndUlc method");
+
+            if (bonusDto.Ulc == null || string.IsNullOrEmpty(bonusDto.Ulc.Trim()))
+                bonusDto.Ulc = SessionRepository.GetUserCredentials().UserName;
+
+            if (bonusDto.Dlc == DateTime.MinValue)
+                bonusDto.Dlc = DateTime.Now;
         }
     }
 }
